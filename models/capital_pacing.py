@@ -3,59 +3,47 @@
 """
 capital_pacing_optimization.py
 
-Example of using scipy.optimize to decide on new commitments to different
-“funds/strategies” while ensuring we retain enough liquidity 
-to cover projected 'capital_calls'.
-
-This is a simplified single-period example.
+A simple example using scipy.optimize to handle a single-period problem:
+we forecast some 'capital_calls' next period, and try to commit capital 
+to 3 strategies without breaching liquidity constraints.
 """
 
 import numpy as np
 from scipy.optimize import minimize
 
-# Let's say we have 3 hypothetical PE strategies:
-expected_returns = np.array([0.12, 0.10, 0.15])  # annual returns
-initial_liquidity = 100_000_000  # $100M
+# Hypothetical scenario:
+expected_returns = np.array([0.12, 0.10, 0.15])
+initial_liquidity = 100_000_000
 max_commit = np.array([50_000_000, 60_000_000, 40_000_000])
 
 def total_returns(commitments):
-    """
-    Negative sum of (commitment_i * expected_return_i),
-    because we use 'minimize' to find the max.
-    """
+    """Use negative sign so we can maximize by 'minimize' function."""
     return -np.sum(commitments * expected_returns)
 
 def liquidity_constraint(commitments):
     """
-    Suppose we forecast, say, 10M in 'capital_calls' next period 
-    from the ARIMA or Monte Carlo steps. We want to keep a 30% buffer 
-    of total liquidity. 
-    So we can only commit up to (initial_liquidity - calls - buffer).
+    Suppose we forecast capital_calls at 10M (e.g. from ARIMA or Monte Carlo).
+    We also maintain a 30% liquidity buffer. 
+    => max available = initial_liquidity - capital_calls - buffer
     """
-    forecasted_calls = 10_000_000  # e.g. from your ARIMA model or a scenario
-    buffer = initial_liquidity * 0.30  # 30% buffer
+    forecasted_calls = 10_000_000
+    buffer = initial_liquidity * 0.30
     max_available = initial_liquidity - forecasted_calls - buffer
     return max_available - np.sum(commitments)
 
-bounds = [(0, max_commit[i]) for i in range(len(max_commit))]
-
-cons = ({ "type": "ineq", "fun": liquidity_constraint },)
-
 def main():
-    x0 = np.zeros(len(expected_returns))  # start with 0 commitments
+    cons = ({ "type": "ineq", "fun": liquidity_constraint },)
+    bounds = [(0, mc) for mc in max_commit]
+    x0 = np.zeros(len(expected_returns))
 
-    solution = minimize(
-        total_returns,
-        x0,
-        constraints=cons,
-        bounds=bounds,
-        method="SLSQP"
-    )
-
+    solution = minimize(total_returns, x0, 
+                        constraints=cons, 
+                        bounds=bounds, 
+                        method="SLSQP")
     if solution.success:
         optimal_commitments = solution.x
-        print("Optimal commitments to each strategy:", optimal_commitments)
-        print("Max Return Achieved:", -solution.fun)  # since we negated it
+        print("Optimal commitments:", optimal_commitments)
+        print("Max Return Achieved:", -solution.fun)
     else:
         print("Optimization failed:", solution.message)
 

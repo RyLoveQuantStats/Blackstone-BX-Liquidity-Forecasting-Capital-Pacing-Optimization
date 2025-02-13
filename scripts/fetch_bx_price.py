@@ -4,7 +4,7 @@ import sqlite3
 import yfinance as yf
 
 # Define stock ticker
-ticker = "BX"
+ticker = "KKR"
 
 # Fetch stock price data
 bx_data = yf.download(ticker, start="2019-12-31", end="2024-01-01")

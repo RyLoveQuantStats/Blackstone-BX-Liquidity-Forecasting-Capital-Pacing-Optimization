@@ -12,7 +12,7 @@ FMP_API_KEY = "s8afH4ybbBXmxrljmWBm7dOE53MjLTpM"
 # ---------------------------------------------------
 # 2. Set your ticker and desired statements
 # ---------------------------------------------------
-ticker = "BX"
+ticker = "KKR"
 base_url = "https://financialmodelingprep.com/api/v3"
 
 # Endpoints for different statements - set 'period=annual' for annual data

@@ -3,8 +3,8 @@
 """
 liquidity_forecasting_arima.py
 
-Loads the merged dataset (bx_master_data),
-performs an ARIMA (or SARIMAX) forecast on 'capital_calls' (now derived from actual BX data).
+Loads the final 'bx_master_data' from the DB (or CSV),
+performs ARIMA (SARIMAX) forecasting on 'capital_calls'.
 """
 
 import sqlite3
@@ -21,7 +21,6 @@ def load_master_data(db_path=DB_PATH, table=TABLE_NAME):
     conn = sqlite3.connect(db_path)
     df = pd.read_sql(f"SELECT * FROM {table}", conn, parse_dates=["Date"])
     conn.close()
-
     df.set_index("Date", inplace=True)
     df.sort_index(inplace=True)
     return df
@@ -29,14 +28,14 @@ def load_master_data(db_path=DB_PATH, table=TABLE_NAME):
 def main():
     df = load_master_data()
 
-    # We now rely on a real 'capital_calls' column from the merge script
+    # Check column
     if "capital_calls" not in df.columns:
-        raise ValueError("❌ 'capital_calls' column not found in bx_master_data. Did you rename or create it?")
+        raise ValueError("❌ 'capital_calls' column not found. Did you rename or compute it?")
 
-    # Drop any rows with missing or invalid capital_calls
+    # Remove rows with missing capital_calls if any
     df = df[df["capital_calls"].notnull()]
 
-    # Train/Test Split
+    # We'll do a simple train/test split
     train_size = int(len(df) * 0.8)
     train_df = df.iloc[:train_size].copy()
     test_df = df.iloc[train_size:].copy()
@@ -44,7 +43,7 @@ def main():
     train_y = train_df["capital_calls"]
     test_y = test_df["capital_calls"]
 
-    # For demonstration, let's do a simple ARIMA(2,1,2)
+    # Fit ARIMA or SARIMAX
     model = SARIMAX(train_y, order=(2,1,2))
     results = model.fit(disp=False)
     print(results.summary())
@@ -53,7 +52,6 @@ def main():
     n_forecast = len(test_df)
     forecast = results.forecast(steps=n_forecast)
 
-    # Evaluate
     test_df["forecast"] = forecast
     mae = np.mean(np.abs(test_df["capital_calls"] - test_df["forecast"]))
     rmse = np.sqrt(np.mean((test_df["capital_calls"] - test_df["forecast"])**2))
@@ -64,7 +62,7 @@ def main():
     plt.plot(train_df["capital_calls"], label="Train")
     plt.plot(test_df["capital_calls"], label="Test (Actual)")
     plt.plot(test_df["forecast"], label="Forecast", linestyle="--")
-    plt.title("Blackstone (BX) Capital Calls - ARIMA Forecast")
+    plt.title("Capital Calls - ARIMA Forecast")
     plt.legend()
 
     os.makedirs("plots", exist_ok=True)
