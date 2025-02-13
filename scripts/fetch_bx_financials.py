@@ -1,60 +1,110 @@
 import os
+import requests
 import pandas as pd
-import sqlite3
-import yfinance as yf
-from datetime import datetime, timedelta
+from sqlalchemy import create_engine
+from datetime import datetime
 
-# Define stock ticker
+# ---------------------------------------------------
+# 1. Provide your FMP API key
+# ---------------------------------------------------
+FMP_API_KEY = "s8afH4ybbBXmxrljmWBm7dOE53MjLTpM"
+
+# ---------------------------------------------------
+# 2. Set your ticker and desired statements
+# ---------------------------------------------------
 ticker = "BX"
+base_url = "https://financialmodelingprep.com/api/v3"
 
-# Create Ticker object for BX
-stock = yf.Ticker(ticker)
+# Endpoints for different statements - set 'period=annual' for annual data
+url_income = f"{base_url}/income-statement/{ticker}?apikey={FMP_API_KEY}&limit=100&period=annual"
+url_balance = f"{base_url}/balance-sheet-statement/{ticker}?apikey={FMP_API_KEY}&limit=100&period=annual"
+url_cashflow = f"{base_url}/cash-flow-statement/{ticker}?apikey={FMP_API_KEY}&limit=100&period=annual"
 
-# Fetch financial statements from Yahoo Finance
-# Yahoo provides these as DataFrames with dates as columns and line items as the index.
-income = stock.financials       # Income Statement
-balance = stock.balance_sheet   # Balance Sheet
-cashflow = stock.cashflow       # Cash Flow Statement
+# ---------------------------------------------------
+# 3. Helper function to fetch and transform data
+# ---------------------------------------------------
+def fetch_financials(url, statement_name):
+    """
+    Fetch financial statement JSON from FMP and load into a DataFrame.
+    Returns an empty DataFrame on failure or if data is missing.
+    """
+    try:
+        resp = requests.get(url)
+        resp.raise_for_status()
+        data = resp.json()
+        
+        if not isinstance(data, list) or len(data) == 0:
+            print(f"❌ No {statement_name} data found for {ticker}.")
+            return pd.DataFrame()
+        
+        # Convert JSON list to DataFrame
+        df = pd.DataFrame(data)
+        
+        # The FMP statements have a 'date' column indicating the period end (e.g. "2022-12-31").
+        # We rename it to 'period_ending' to match your original code style.
+        df.rename(columns={'date': 'period_ending'}, inplace=True)
+        
+        # Convert the period_ending column to datetime
+        df['period_ending'] = pd.to_datetime(df['period_ending'], errors='coerce')
+        
+        # For demonstration, we'll keep all columns. 
+        # If you only want certain columns, you can filter them out here.
+        
+        return df
+    except Exception as e:
+        print(f"❌ Error fetching {statement_name}: {e}")
+        return pd.DataFrame()
 
-# Check that data exists
-if income.empty or balance.empty or cashflow.empty:
-    print("❌ One or more financial statements are empty. Unable to retrieve data.")
+# ---------------------------------------------------
+# 4. Fetch each statement
+# ---------------------------------------------------
+income_df = fetch_financials(url_income, "Income Statement")
+balance_df = fetch_financials(url_balance, "Balance Sheet")
+cashflow_df = fetch_financials(url_cashflow, "Cash Flow Statement")
+
+# ---------------------------------------------------
+# 5. Check if data is present
+# ---------------------------------------------------
+if income_df.empty or balance_df.empty or cashflow_df.empty:
+    print("❌ One or more financial statements are empty. Unable to retrieve sufficient data.")
 else:
-    # Transpose each DataFrame so that rows represent reporting periods,
-    # and reset the index to get the reporting period as a column named "period_ending".
-    income_df = income.transpose().reset_index().rename(columns={"index": "period_ending"})
-    balance_df = balance.transpose().reset_index().rename(columns={"index": "period_ending"})
-    cashflow_df = cashflow.transpose().reset_index().rename(columns={"index": "period_ending"})
-
-    # Convert the reporting period to datetime
-    income_df["period_ending"] = pd.to_datetime(income_df["period_ending"])
-    balance_df["period_ending"] = pd.to_datetime(balance_df["period_ending"])
-    cashflow_df["period_ending"] = pd.to_datetime(cashflow_df["period_ending"])
-
-    # Filter data for the last 5 years (Yahoo typically provides only this range for financials)
-    five_years_ago = datetime.now() - timedelta(days=5 * 365)
-    income_df = income_df[income_df["period_ending"] >= five_years_ago]
-    balance_df = balance_df[balance_df["period_ending"] >= five_years_ago]
-    cashflow_df = cashflow_df[cashflow_df["period_ending"] >= five_years_ago]
-
-    # Merge the financial statements on the common key "period_ending"
-    merged_df = income_df.merge(balance_df, on="period_ending", how="outer", suffixes=("_income", "_balance"))
-    merged_df = merged_df.merge(cashflow_df, on="period_ending", how="outer", suffixes=("", "_cashflow"))
-
-    # Preprocessing:
-    # Rename the merge key to "Date", convert to datetime, set as index, and fill missing values.
-    merged_df.rename(columns={"period_ending": "Date"}, inplace=True)
-    merged_df["Date"] = pd.to_datetime(merged_df["Date"], errors="coerce")
-    merged_df.set_index("Date", inplace=True)
-    merged_df.fillna(0, inplace=True)
-
-    # Final check for missing values (optional)
-    print("Final missing values:\n", merged_df.isnull().sum())
-
-    # Connect to SQLite database and store the merged data into the bx_financials table
+    # ---------------------------------------------------
+    # 6. Merge DataFrames on the 'period_ending' column
+    # ---------------------------------------------------
+    # In FMP data, each row is a single period. We can merge directly on 'period_ending'.
+    merged_df = pd.merge(income_df, balance_df, on='period_ending', how='outer', suffixes=('_income', '_balance'))
+    merged_df = pd.merge(merged_df, cashflow_df, on='period_ending', how='outer', suffixes=('', '_cashflow'))
+    
+    # ---------------------------------------------------
+    # 7. Rename 'period_ending' to 'Date' and set as index
+    # ---------------------------------------------------
+    merged_df.rename(columns={'period_ending': 'Date'}, inplace=True)
+    merged_df['Date'] = pd.to_datetime(merged_df['Date'], errors='coerce')
+    merged_df.set_index('Date', inplace=True)
+    
+    # ---------------------------------------------------
+    # 8. Handling missing values
+    # ---------------------------------------------------
+    # Fill missing numeric columns with 0 (or use another strategy if desired)
+    numeric_cols = merged_df.select_dtypes(include=['float64', 'int64']).columns
+    merged_df[numeric_cols] = merged_df[numeric_cols].fillna(0)
+    
+    # ---------------------------------------------------
+    # 9. (Optional) Filter data by date if you only want recent years
+    # ---------------------------------------------------
+    # Here, we do NOT limit to 5 years, but you could if you wanted to:
+    # from datetime import timedelta
+    # five_years_ago = datetime.now() - timedelta(days=5*365)
+    # merged_df = merged_df[merged_df.index >= five_years_ago]
+    
+    # ---------------------------------------------------
+    # 10. Save data to SQLite
+    # ---------------------------------------------------
     os.makedirs("database", exist_ok=True)
-    conn = sqlite3.connect("database/blackstone_data.db")
-    merged_df.to_sql("bx_financials", conn, if_exists="replace", index=True)
-    conn.close()
-
+    engine = create_engine("sqlite:///database/blackstone_data.db")
+    
+    merged_df.to_sql("bx_financials", con=engine, if_exists="replace")
+    engine.dispose()
+    
     print("✅ Financial statement data stored successfully in the 'bx_financials' table.")
+    print("Final missing values:\n", merged_df.isnull().sum())
