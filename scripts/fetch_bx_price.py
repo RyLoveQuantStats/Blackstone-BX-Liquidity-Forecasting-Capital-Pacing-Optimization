@@ -7,7 +7,7 @@ import yfinance as yf
 ticker = "BX"
 
 # Fetch stock price data
-bx_data = yf.download(ticker, start="2010-01-01", end="2024-01-01")
+bx_data = yf.download(ticker, start="2019-12-31", end="2024-01-01")
 print(bx_data.columns)
 
 # Flatten MultiIndex columns

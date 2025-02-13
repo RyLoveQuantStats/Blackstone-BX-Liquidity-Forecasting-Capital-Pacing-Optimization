@@ -17,7 +17,7 @@ fred_tickers = {
 }
 
 # 3. Fetch data from FRED
-def fetch_fred_data(tickers, start="2000-01-01", end="2023-12-31"):
+def fetch_fred_data(tickers, start="2019-12-31", end="2024-01-01"):
     """
     Uses fredapi to download each series between the specified date range,
     then concatenates them into a single pandas DataFrame.
