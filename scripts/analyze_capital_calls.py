@@ -1,85 +1,77 @@
-import pandas as pd
-import numpy as np
-
-# Load merged dataset
-file_path = 'output/bx_master_data.csv'
-df = pd.read_csv(file_path, parse_dates=['Date'], index_col='Date')
-
-# Columns potentially useful for PE capital calls/distributions analysis
-relevant_columns = [
-    'netCashProvidedByOperatingActivities', 'netCashUsedForInvestingActivites',
-    'dividendsPaid', 'purchasesOfInvestments', 'retainedEarnings',
-    'commonStockIssued', 'commonStockRepurchased', 'debtRepayment', 'debtIssued'
-]
-
-# Filter available columns
-available_columns = [col for col in relevant_columns if col in df.columns]
-
-# Create derived metrics commonly used in PE for capital calls:
-df['net_financing_activity'] = df.get('debtIssued', 0) - df.get('debtRepayment', 0)
-df['net_equity_activity'] = df.get('commonStockIssued', 0) - df.get('commonStockRepurchased', 0)
-df['investment_activity'] = df.get('purchasesOfInvestments', 0) - df.get('netCashUsedForInvestingActivites', 0)
-df['operational_cashflow'] = df.get('netCashProvidedByOperatingActivities', 0)
-
-# Analyze changes for capital call patterns
-capital_call_estimate = df['investment_activity'].apply(lambda x: x if x > 0 else 0)
-distribution_estimate = df['net_financing_activity'].apply(lambda x: x if x < 0 else 0) * -1
-
-# Analyze volatility and correlation of these metrics with net cash flows
-corr_matrix = df[[
-    'net_financing_activity', 'net_equity_activity',
-    'investment_activity', 'operational_cashflow'
-]].corr()
-
-# Output analysis
-print("Available columns for analysis:", available_columns)
-print("\nCapital call estimate (top 5):\n", capital_call_estimate.head())
-print("\nDistribution estimate (top 5):\n", distribution_estimate.head())
-print("\nCorrelation matrix:\n", corr_matrix)
-
-# Save outputs for review
-summary_path = 'output/pe_capital_calls_analysis.csv'
-df[['net_financing_activity', 'net_equity_activity', 'investment_activity', 'operational_cashflow']].describe().to_csv(summary_path)
-print(f"Analysis saved to {summary_path}")
+#!/usr/bin/env python3
 
 import pandas as pd
 import numpy as np
+import os
 
-def load_data(file_path):
-    df = pd.read_csv(file_path, parse_dates=['Date'], index_col='Date')
+FILE_PATH = "output/bx_master_data.csv"
+ANALYSIS_OUTPUT = "output/pe_capital_calls_analysis.csv"
+
+def load_merged_data(file_path=FILE_PATH):
+    df = pd.read_csv(file_path, parse_dates=["Date"], index_col="Date")
+    df.fillna(0, inplace=True)
     return df
 
-def calculate_capital_calls(df):
-    # Calculate net financing inflows (debt issued + equity issued)
-    net_financing_inflows = df.get('debtIssued', 0) + df.get('commonStockIssued', 0)
+def inspect_nonzero_columns(df):
+    columns_to_check = [
+        "netCashProvidedByOperatingActivities",
+        "netCashUsedForInvestingActivites",
+        "dividendsPaid",
+        "purchasesOfInvestments",
+        "retainedEarnings",
+        "commonStockIssued",
+        "commonStockRepurchased",
+        "debtRepayment",
+        "debtIssued",
+        "longTermDebt",
+        "shortTermDebt",
+        "netCashUsedProvidedByFinancingActivities",
+        "capital_calls",
+        "distributions",
+    ]
+    print("Non-zero counts for key columns:\n")
+    for col in columns_to_check:
+        if col in df.columns:
+            non_zero_count = (df[col] != 0).sum()
+            print(f"{col}: non-zero rows = {non_zero_count} / {len(df)}")
+        else:
+            print(f"{col}: NOT FOUND in df.columns")
 
-    # Calculate net investment outflows
-    investment_outflows = df.get('purchasesOfInvestments', 0)
+def analyze_capital_calls(df):
+    print("\n[INFO] Analyzing capital_calls & distributions:\n")
+    if "capital_calls" in df.columns:
+        print(df["capital_calls"].describe())
+        print("\nLargest capital calls:\n", df["capital_calls"].nlargest(5))
+    else:
+        print("No 'capital_calls' column found.")
 
-    # Calculate operational cash flow
-    operational_cashflow = df.get('netCashProvidedByOperatingActivities', 0)
-
-    # Calculate shortfall
-    shortfall = investment_outflows - (operational_cashflow + net_financing_inflows)
-
-    # Capital call is the positive shortfall (if any)
-    df['capital_calls'] = shortfall.apply(lambda x: max(0, x))
-
-    return df
-
-def analyze_results(df):
-    print("Capital Calls Analysis:\n")
-    print(df['capital_calls'].describe())
-    print("\nTop Capital Calls:\n", df['capital_calls'].nlargest(5))
+    if "distributions" in df.columns:
+        print("\nDistributions describe:\n", df["distributions"].describe())
+        print("\nLargest distributions:\n", df["distributions"].nlargest(5))
+    else:
+        print("No 'distributions' column found.")
 
 def main():
-    file_path = 'output/bx_master_data.csv'
-    df = load_data(file_path)
-    df = calculate_capital_calls(df)
-    analyze_results(df)
-    output_path = 'output/pe_capital_calls_estimates.csv'
-    df[['capital_calls']].to_csv(output_path)
-    print(f"Capital call estimates saved to {output_path}")
+    os.makedirs("output", exist_ok=True)
+    df = load_merged_data(FILE_PATH)
+
+    inspect_nonzero_columns(df)
+    analyze_capital_calls(df)
+
+    # Example correlation analysis with columns that might exist
+    corr_cols = [
+        "capital_calls", "distributions",
+        "netCashProvidedByOperatingActivities", "retainedEarnings",
+        "longTermDebt", "shortTermDebt"
+    ]
+    corr_cols = [c for c in corr_cols if c in df.columns]
+    if corr_cols:
+        corr_matrix = df[corr_cols].corr()
+        print("\nCorrelation matrix:\n", corr_matrix)
+        corr_matrix.to_csv(ANALYSIS_OUTPUT)
+        print(f"\nAnalysis correlation matrix saved to {ANALYSIS_OUTPUT}")
+    else:
+        print("\nNo columns available for correlation analysis.")
 
 if __name__ == "__main__":
     main()
