@@ -37,12 +37,26 @@ def main():
     x0 = np.zeros(len(expected_returns))
     
     solution = minimize(total_returns, x0, constraints=cons, bounds=bounds, method="SLSQP")
+    
     if solution.success:
         optimal_commitments = solution.x
+        max_return = float(-solution.fun)
+        # Print statements for command-line usage
         print("Optimal commitments:", optimal_commitments)
-        print("Max Return Achieved:", -solution.fun)
+        print("Max Return Achieved:", max_return)
+        # Return structured result for Django API
+        return {
+            "optimal_commitments": optimal_commitments.tolist(),
+            "max_return": max_return
+        }
     else:
-        print("Optimization failed:", solution.message)
+        error_msg = solution.message
+        print("Optimization failed:", error_msg)
+        return {"error": error_msg}
+
+def run():
+    result = main()  # Run the main function and capture its output
+    return result
 
 if __name__ == "__main__":
-    main()
+    print(run())

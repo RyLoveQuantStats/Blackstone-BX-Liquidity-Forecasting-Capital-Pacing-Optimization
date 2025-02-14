@@ -54,25 +54,40 @@ def main():
     # Fit SARIMAX model (tune order as needed)
     model = SARIMAX(train_y, order=(2,1,2))
     results = model.fit(disp=False)
-    print(results.summary())
+    summary_text = results.summary().as_text()  # capture summary as text
     
     # Forecast over the test period
     n_forecast = len(test_df)
     forecast = results.forecast(steps=n_forecast)
     test_df["forecast"] = forecast
     
-    mae = np.mean(np.abs(test_df["capital_calls"] - test_df["forecast"]))
-    rmse = np.sqrt(np.mean((test_df["capital_calls"] - test_df["forecast"])**2))
-    print(f"MAE: {mae:.2f}, RMSE: {rmse:.2f}")
+    mae = float(np.mean(np.abs(test_df["capital_calls"] - test_df["forecast"])))
+    rmse = float(np.sqrt(np.mean((test_df["capital_calls"] - test_df["forecast"])**2)))
     
+    # Save plot to file
     plt.figure(figsize=(10,5))
     plt.plot(train_df["capital_calls"], label="Train")
     plt.plot(test_df["capital_calls"], label="Test (Actual)")
     plt.plot(test_df["forecast"], label="Forecast", linestyle="--")
     plt.title("Capital Calls - ARIMA Forecast")
     plt.legend()
-    plt.savefig("plots/capital_calls_forecast.png")
-    plt.show()
+    plot_path = "plots/capital_calls_forecast.png"
+    plt.savefig(plot_path)
+    plt.close()  # close the plot to free memory
+    
+    # Return the results as a dictionary
+    return {
+        "summary": summary_text,
+        "mae": mae,
+        "rmse": rmse,
+        "forecast": forecast.tolist(),
+        "plot": plot_path
+    }
+
+
+def run():
+    result = main()  # Assuming you adjust main() to return the data instead of printing
+    return result
 
 if __name__ == "__main__":
-    main()
+    print(run())

@@ -33,6 +33,7 @@ def main():
     df["calls_change"] = df["capital_calls"].diff().fillna(0)
     mean_change = df["calls_change"].mean()
     std_change = df["calls_change"].std()
+    
     print(f"Mean daily change: {mean_change:.2f}, Std: {std_change:.2f}")
     
     n_simulations = 100000
@@ -47,13 +48,26 @@ def main():
         outcomes.append(max(0, simulated_value))
     
     outcomes = np.array(outcomes)
-    p5 = np.percentile(outcomes, 5)
-    p50 = np.percentile(outcomes, 50)
-    p95 = np.percentile(outcomes, 95)
+    p5 = float(np.percentile(outcomes, 5))
+    p50 = float(np.percentile(outcomes, 50))
+    p95 = float(np.percentile(outcomes, 95))
     
     print(f"5th percentile: {p5:.2f}")
     print(f"Median: {p50:.2f}")
     print(f"95th percentile: {p95:.2f}")
+    
+    # Return a dictionary with the results for the API
+    return {
+        "mean_change": mean_change,
+        "std_change": std_change,
+        "5th_percentile": p5,
+        "median": p50,
+        "95th_percentile": p95
+    }
+
+def run():
+    result = main()  # Capture the output of main()
+    return result
 
 if __name__ == "__main__":
-    main()
+    print(run())
