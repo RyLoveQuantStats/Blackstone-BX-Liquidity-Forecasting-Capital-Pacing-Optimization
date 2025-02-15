@@ -1,9 +1,15 @@
+'''
+Fetch Treasury Yields, CPI, and Bond Spreads from FRED API
+'''
+
 import os
 import pandas as pd
 from fredapi import Fred
 from utils.db_utils import store_dataframe
 from utils.logging_utils import setup_logging, log_info, log_error
 from constants import FRED_Base_URL, FRED_API_KEY
+
+fred = Fred(api_key=FRED_API_KEY)
 
 fred_tickers = {
     "10Y Treasury Yield": "DGS10",
@@ -17,11 +23,12 @@ fred_tickers = {
 
 def fetch_and_store_fred_data():
     log_info("Starting to fetch data from FRED API")
+
     def fetch_fred_data(tickers, start="2019-12-31", end="2024-01-01"):
         data_frames = []
         for label, series_id in tickers.items():
             try:
-                series = Fred.get_series(series_id, observation_start=start, observation_end=end)
+                series = fred.get_series(series_id, observation_start=start, observation_end=end)
                 df = series.to_frame(name=label)
                 data_frames.append(df)
                 log_info(f"Successfully fetched data for {label}")

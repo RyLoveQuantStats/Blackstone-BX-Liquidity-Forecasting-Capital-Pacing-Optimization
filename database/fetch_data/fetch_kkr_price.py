@@ -1,3 +1,7 @@
+'''
+Fetch KKR stock price data from Yahoo Finance
+'''
+
 import pandas as pd
 import numpy as np
 import yfinance as yf      # Use yfinance to fetch stock data

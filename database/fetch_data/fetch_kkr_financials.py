@@ -1,3 +1,9 @@
+'''
+Fetches the most recent KKR filings (10-K and 10-Q) from the SEC API, 
+extracts their financial data, merges the data into one DataFrame, 
+cleans the data, and stores it in the database.
+'''
+
 import os
 import requests
 import pandas as pd
