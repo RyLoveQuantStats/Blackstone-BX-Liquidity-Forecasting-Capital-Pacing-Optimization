@@ -14,10 +14,18 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
-
+# liquidity_project/urls.py
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
+from django.http import HttpResponse
+
+def home_view(request):
+    return HttpResponse("Welcome to the BX Liquidity Forecasting API!")
 
 urlpatterns = [
-    path("admin/", admin.site.urls),
+    path('', home_view),  # Now the root URL will display a welcome message.
+    path('admin/', admin.site.urls),
+    path('api/', include('liquidity_api.urls')),
 ]
+
+

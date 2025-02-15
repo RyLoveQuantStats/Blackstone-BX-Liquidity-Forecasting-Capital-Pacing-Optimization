@@ -13,8 +13,11 @@ Enhancements:
 import sqlite3
 import pandas as pd
 import numpy as np
+import os
 
-DB_PATH = "database/blackstone_data.db"
+DB_PATH = r"C:\Users\ryanl\OneDrive\Desktop\Programming Apps\Python\python_work\BX_Liquidity_Forecasting\database\blackstone_data.db"
+print("[DEBUG] Final DB_PATH =", DB_PATH)
+
 TABLE_NAME = "bx_master_data"
 
 def load_master_data(db_path=DB_PATH, table=TABLE_NAME):
