@@ -15,9 +15,6 @@ pyvenv.cfg
 # Ignore logs
 *.log
 
-# Ignore __init__ files
-__init__.py
-
 # Ignore output data
 output_data/
 plots/
