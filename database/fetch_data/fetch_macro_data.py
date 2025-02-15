@@ -3,8 +3,7 @@ import pandas as pd
 from fredapi import Fred
 from utils.db_utils import store_dataframe
 from utils.logging_utils import setup_logging, log_info, log_error
-
-fred = Fred(api_key="e795295f1d454318e2ac436f480317d2")
+from constants import FRED_Base_URL, FRED_API_KEY
 
 fred_tickers = {
     "10Y Treasury Yield": "DGS10",
@@ -22,7 +21,7 @@ def fetch_and_store_fred_data():
         data_frames = []
         for label, series_id in tickers.items():
             try:
-                series = fred.get_series(series_id, observation_start=start, observation_end=end)
+                series = Fred.get_series(series_id, observation_start=start, observation_end=end)
                 df = series.to_frame(name=label)
                 data_frames.append(df)
                 log_info(f"Successfully fetched data for {label}")

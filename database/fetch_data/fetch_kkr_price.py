@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 import yfinance as yf
 from utils.db_utils import store_dataframe
-from utils.logging_utils import setup_logging, log_info, log_error  # Import centralized logging utilities
+from utils.logging_utils import setup_logging, log_info, log_error
 
 def fetch_and_store_stock_data():
     log_info("Starting stock data fetch for KKR")

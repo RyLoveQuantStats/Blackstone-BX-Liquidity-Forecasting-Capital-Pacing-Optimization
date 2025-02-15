@@ -54,3 +54,84 @@
 2025-02-15 07:54:21,055 - ERROR - Error fetching strategy data: no such table: bx_master_data
 2025-02-15 07:54:21,056 - ERROR - Error fetching strategy data: no such table: bx_master_data
 2025-02-15 07:54:21,056 - INFO - No commitments or symbols available for plotting.
+2025-02-15 08:06:44,951 - INFO - Fetching KKR filings from SEC API
+2025-02-15 08:06:45,445 - ERROR - Error fetching data from SEC API: 404 - <!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Error</title>
+</head>
+<body>
+<pre>Cannot POST /filings</pre>
+</body>
+</html>
+
+2025-02-15 08:08:01,993 - INFO - Fetching KKR filings from SEC API
+2025-02-15 08:08:02,365 - ERROR - Error fetching data from SEC API: 404 - <!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Error</title>
+</head>
+<body>
+<pre>Cannot POST /vX/filings</pre>
+</body>
+</html>
+
+2025-02-15 08:09:20,476 - INFO - Fetching KKR filings from SEC API
+2025-02-15 08:09:20,740 - ERROR - Error fetching data from SEC API: 404 - <!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Error</title>
+</head>
+<body>
+<pre>Cannot POST /filings</pre>
+</body>
+</html>
+
+2025-02-15 11:42:56,436 - INFO - Fetching KKR filings from SEC API
+2025-02-15 11:42:56,883 - ERROR - Error fetching data from SEC API: 404 - <!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Error</title>
+</head>
+<body>
+<pre>Cannot POST /filings</pre>
+</body>
+</html>
+
+2025-02-15 11:51:20,080 - INFO - Starting to fetch data from FRED API
+2025-02-15 11:51:20,529 - ERROR - Error fetching '10Y Treasury Yield' (ID: DGS10) from FRED: Bad Request.  The value for variable api_key is not a 32 character alpha-numeric lower-case string.  Read https://fred.stlouisfed.org/docs/api/api_key.html for more information.
+2025-02-15 11:51:20,744 - ERROR - Error fetching '5Y Treasury Yield' (ID: DGS5) from FRED: Bad Request.  The value for variable api_key is not a 32 character alpha-numeric lower-case string.  Read https://fred.stlouisfed.org/docs/api/api_key.html for more information.
+2025-02-15 11:51:21,012 - ERROR - Error fetching '2Y Treasury Yield' (ID: DGS2) from FRED: Bad Request.  The value for variable api_key is not a 32 character alpha-numeric lower-case string.  Read https://fred.stlouisfed.org/docs/api/api_key.html for more information.
+2025-02-15 11:51:21,223 - ERROR - Error fetching '30Y Treasury Yield' (ID: DGS30) from FRED: Bad Request.  The value for variable api_key is not a 32 character alpha-numeric lower-case string.  Read https://fred.stlouisfed.org/docs/api/api_key.html for more information.
+2025-02-15 11:51:21,435 - ERROR - Error fetching 'CPI' (ID: CPIAUCSL) from FRED: Bad Request.  The value for variable api_key is not a 32 character alpha-numeric lower-case string.  Read https://fred.stlouisfed.org/docs/api/api_key.html for more information.
+2025-02-15 11:51:21,642 - ERROR - Error fetching 'BAA Corporate Bond Spread' (ID: BAA10Y) from FRED: Bad Request.  The value for variable api_key is not a 32 character alpha-numeric lower-case string.  Read https://fred.stlouisfed.org/docs/api/api_key.html for more information.
+2025-02-15 11:51:21,860 - ERROR - Error fetching 'High Yield Bond Index' (ID: BAMLH0A0HYM2) from FRED: Bad Request.  The value for variable api_key is not a 32 character alpha-numeric lower-case string.  Read https://fred.stlouisfed.org/docs/api/api_key.html for more information.
+2025-02-15 11:51:21,912 - INFO - Macroeconomic data successfully stored in SQL database.
+2025-02-15 11:51:49,226 - INFO - Fetching KKR filings from SEC API
+2025-02-15 11:51:49,569 - ERROR - Error fetching data from SEC API: 404 - <!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Error</title>
+</head>
+<body>
+<pre>Cannot POST /filings</pre>
+</body>
+</html>
+
+2025-02-15 11:53:56,953 - INFO - Fetching KKR filings from SEC API
+2025-02-15 11:53:57,386 - ERROR - Error fetching data from SEC API: 404 - <!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Error</title>
+</head>
+<body>
+<pre>Cannot POST /filings</pre>
+</body>
+</html>
+
