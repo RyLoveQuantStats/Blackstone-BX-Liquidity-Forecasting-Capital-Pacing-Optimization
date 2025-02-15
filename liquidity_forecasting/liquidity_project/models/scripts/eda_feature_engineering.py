@@ -1,7 +1,5 @@
-#!/usr/bin/env python3
-"""
-eda_and_feature_engineering.py
 
+"""
 Loads the merged 'master' dataset (master_data) from the database or CSV,
 performs basic Exploratory Data Analysis (EDA), and demonstrates 
 feature engineering steps.
@@ -79,18 +77,18 @@ def feature_engineering(df):
       - Growth rates
     Adjust to fit your data context.
     """
-    # Example: Create a lag of 10Y Treasury yield if it exists.
+    # Create a lag of 10Y Treasury yield if it exists.
     if "10Y Treasury Yield" in df.columns:
         df["10Y_Treasury_Lag30"] = df["10Y Treasury Yield"].shift(30)
 
-    # Example: Create a financial ratio if totalLiab and totalAssets exist.
+    # Create a financial ratio if totalLiab and totalAssets exist.
     if "totalLiab" in df.columns and "totalAssets" in df.columns:
         df["Debt_to_Assets"] = df.apply(
             lambda row: (row["totalLiab"] / row["totalAssets"]) if row["totalAssets"] != 0 else 0,
             axis=1
         )
 
-    # Example: Create a moving average of the close price.
+    # Create a moving average of the close price.
     if "Close" in df.columns:
         df["MA_20"] = df["Close"].rolling(20).mean()
         df["MA_50"] = df["Close"].rolling(50).mean()

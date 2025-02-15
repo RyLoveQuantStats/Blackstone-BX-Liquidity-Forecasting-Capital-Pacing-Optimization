@@ -15,10 +15,6 @@ pyvenv.cfg
 # Ignore logs
 *.log
 
-# Ignore output data
-output_data/
-plots/
-
 # Ignore environment and settings files
 *.env
 constants.py

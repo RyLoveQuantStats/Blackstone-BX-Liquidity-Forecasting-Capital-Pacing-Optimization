@@ -1,26 +1,15 @@
-#!/usr/bin/env python3
 """
-liquidity_forecasting_arima.py
-
+Liquidity Forecasting: SARIMAX Model with Macroeconomic Variables
+-----------------------------------------------------------------
 This script loads the merged KKR dataset from a centralized SQLite database,
 performs SARIMAX forecasting on the 'capital_calls' time series (with exogenous variables),
 and outputs:
   - A summary of the fitted SARIMAX model and its parameters.
   - Forecast error metrics (MAE, RMSE, MAPE).
-  - Forecast and residual diagnostic plots (with ACF, PACF, Q–Q plot, and histogram; with shaded confidence intervals).
+  - Forecast and residual diagnostic plots (with ACF, PACF, QQ plot, and histogram; with shaded confidence intervals).
   - Seasonal and nonseasonal model orders selected via grid search.
   - An ensemble forecast that averages SARIMAX and Exponential Smoothing forecasts.
-  - JSON output ready for integration (e.g., via a Django API).
-
-Enhancements include:
-  - Loading exogenous variables to capture external influences.
-  - Improved frequency handling, robust outlier removal (using MAD), and handling of high skewness via log transformation.
-  - Expanded grid search over both nonseasonal and seasonal orders.
-  - Re-indexing of forecasts so that the forecast plot uses the actual test dates.
-  - An ensemble forecast combining SARIMAX with an exponential smoothing model.
-  - Comprehensive diagnostics and enhanced visualization.
-
-Ensure that the centralized database file is available at the location defined in utils/db_utils.
+  - JSON output ready for integration (Django API).
 """
 
 import os

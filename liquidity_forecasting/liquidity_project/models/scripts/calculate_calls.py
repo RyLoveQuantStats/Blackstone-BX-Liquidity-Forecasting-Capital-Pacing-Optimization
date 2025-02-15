@@ -1,10 +1,12 @@
-#!/usr/bin/env python3
+'''
+Clean and Merge Data, Then Calculate Capital Calls
+'''
 
 import pandas as pd
 import numpy as np
 import os
 
-# Import centralized DB and logging utilities.
+# Import DB and logging utilities.
 from utils.db_utils import get_connection, DB_PATH
 from utils.logging_utils import setup_logging, log_info, log_error
 
@@ -12,6 +14,10 @@ from utils.logging_utils import setup_logging, log_info, log_error
 setup_logging()
 
 OUTPUT_CSV = "output/master_data.csv"
+
+''' 
+Clean and Merge Data before Calculating Capital Calls 
+'''
 
 def load_data_from_sql(db_path=DB_PATH):
     try:
@@ -58,6 +64,11 @@ def merge_data(df_stock, df_financials, df_macro):
     log_info("Data merged successfully.")
     return df_merged
 
+
+''' 
+Calculate PE Capital Calls
+'''
+
 def compute_yoy_inflation(df):
     """
     Computes a year-over-year inflation rate from monthly CPI data.
@@ -103,7 +114,7 @@ def calculate_pe_capital_calls(df, base_rate=0.05):
         df[col] = df[col].fillna(0)
 
     yoy_inflation = compute_yoy_inflation(df)
-    interest_rate = df["10Y Treasury Yield"].mean()  # e.g., average over entire period
+    interest_rate = df["10Y Treasury Yield"].mean()  # average over entire period
     vol_series = df["Volatility_30"].fillna(0)
     vol_factor = vol_series.mean() / 100.0
     adjusted_call_rate = base_rate * (1 + yoy_inflation) * (1 + vol_factor) * (1 + interest_rate / 100)
@@ -143,11 +154,7 @@ def main():
 
     # 2. Merge data
     df_merged = merge_data(df_stock, df_financials, df_macro)
-
-    # 3. Calculate capital calls using YoY inflation
     df_merged = calculate_pe_capital_calls(df_merged)
-
-    # 4. Final cleaning
     df_merged = clean_merged_data(df_merged)
 
     # 5. Store merged data in the database and CSV file

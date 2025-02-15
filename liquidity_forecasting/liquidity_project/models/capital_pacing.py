@@ -1,8 +1,7 @@
-#!/usr/bin/env python3
 """
-capital_pacing_optimization.py
-
-This script dynamically integrates data from your centralized SQL database and performs
+Capital Pacing Optimization Script
+----------------------------------
+This script dynamically integrates data from the SQL database and performs
 capital pacing optimization using a risk-adjusted return objective. It includes:
   - Dynamic data integration & forecasting from the database.
   - A Sharpe-like objective function for risk-adjusted return.
@@ -12,8 +11,6 @@ capital pacing optimization using a risk-adjusted return objective. It includes:
   - Detailed logging & error handling (logs to console and file).
   - Visualization of optimal allocations.
   - JSON output for Django API integration.
-
-Ensure that the centralized database file is available at the location defined in utils/db_utils.py.
 """
 
 import os

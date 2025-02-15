@@ -1,15 +1,12 @@
-#!/usr/bin/env python3
 """
-simulate_liquidity_monte_carlo.py
-
+Monte Carlo Simulation for Liquidity Forecasting
+---------------------------------------------------------
 This script loads the merged KKR dataset from a centralized SQLite database,
 and runs advanced Monte Carlo simulations on the 'capital_calls' time series.
 It offers several simulation methods (normal, t, bootstrap, garch, kde, block, rolling)
 and supports stress testing, parallel processing, and sensitivity analysis.
 It computes additional risk metrics (VaR, CVaR, skewness, kurtosis) and produces
 diagnostic plots. The output is provided as JSON for API/dashboard integration.
-
-Ensure that the centralized database file is available at the location defined in utils/db_utils.
 """
 
 import os
@@ -20,14 +17,14 @@ import json
 import argparse
 from scipy import stats
 
-# Optional: Try to import arch for GARCH simulation.
+# Try to import arch for GARCH simulation.
 try:
     from arch import arch_model
     ARCH_AVAILABLE = True
 except ImportError:
     ARCH_AVAILABLE = False
 
-# Optional: For parallel processing.
+# For parallel processing
 try:
     from joblib import Parallel, delayed
     PARALLEL_AVAILABLE = True

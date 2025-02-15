@@ -1,8 +1,8 @@
 import pandas as pd
 import numpy as np
-import yfinance as yf
-from utils.db_utils import store_dataframe
-from utils.logging_utils import setup_logging, log_info, log_error
+import yfinance as yf      # Use yfinance to fetch stock data
+from utils.db_utils import store_dataframe     # Connects to the database and stores the DataFrame
+from utils.logging_utils import setup_logging, log_info, log_error     # Logging utilities
 
 def fetch_and_store_stock_data():
     log_info("Starting stock data fetch for KKR")

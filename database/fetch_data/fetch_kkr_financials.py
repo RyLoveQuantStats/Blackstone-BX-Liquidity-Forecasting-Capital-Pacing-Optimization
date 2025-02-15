@@ -1,9 +1,9 @@
 import os
 import requests
 import pandas as pd
-from utils.db_utils import store_dataframe
-from utils.logging_utils import setup_logging, log_info, log_error
-from constants import SEC_Base_URL, SEC_API_KEY
+from utils.db_utils import store_dataframe # Connects to the database and stores the DataFrame
+from utils.logging_utils import setup_logging, log_info, log_error # Logging utilities
+from constants import SEC_Base_URL, SEC_API_KEY # SEC API CREDENTIALS
 
 def list_kkr_filings():
     """

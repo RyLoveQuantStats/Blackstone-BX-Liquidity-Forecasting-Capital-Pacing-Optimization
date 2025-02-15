@@ -1,4 +1,6 @@
-#!/usr/bin/env python3
+'''
+Description: Script to analyze capital calls and distributions from merged data.
+'''
 
 import pandas as pd
 import numpy as np
