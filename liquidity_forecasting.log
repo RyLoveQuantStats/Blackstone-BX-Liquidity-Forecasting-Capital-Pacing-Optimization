@@ -1,0 +1,386 @@
+2025-02-14 20:22:12,784 INFO: Final DB_PATH = C:\Users\ryanl\OneDrive\Desktop\Programming Apps\Python\python_work\BX_Liquidity_Forecasting\database\blackstone_data.db
+2025-02-14 20:22:12,840 INFO: Using DB_PATH = C:\Users\ryanl\OneDrive\Desktop\Programming Apps\Python\python_work\BX_Liquidity_Forecasting\database\blackstone_data.db
+2025-02-14 20:22:12,841 ERROR: Error loading data: unable to open database file
+2025-02-14 20:22:29,575 INFO: Final DB_PATH = C:\Users\ryanl\OneDrive\Desktop\Programming Apps\Python\python_work\BX_Liquidity_Forecasting\database\blackstone_data.db
+2025-02-14 20:22:29,575 INFO: Final DB_PATH = C:\Users\ryanl\OneDrive\Desktop\Programming Apps\Python\python_work\BX_Liquidity_Forecasting\database\blackstone_data.db
+2025-02-14 20:22:30,870 INFO: Using DB_PATH = C:\Users\ryanl\OneDrive\Desktop\Programming Apps\Python\python_work\BX_Liquidity_Forecasting\database\blackstone_data.db
+2025-02-14 20:22:30,870 INFO: Using DB_PATH = C:\Users\ryanl\OneDrive\Desktop\Programming Apps\Python\python_work\BX_Liquidity_Forecasting\database\blackstone_data.db
+2025-02-14 20:22:30,871 ERROR: Error loading data: unable to open database file
+2025-02-14 20:22:30,871 ERROR: Error loading data: unable to open database file
+2025-02-14 20:23:00,152 INFO: Final DB_PATH = C:\Users\ryanl\OneDrive\Desktop\Programming Apps\Python\python_work\BX_Liquidity_Forecasting\database\blackstone_data.db
+2025-02-14 20:23:00,152 INFO: Final DB_PATH = C:\Users\ryanl\OneDrive\Desktop\Programming Apps\Python\python_work\BX_Liquidity_Forecasting\database\blackstone_data.db
+2025-02-14 20:23:00,152 INFO: Final DB_PATH = C:\Users\ryanl\OneDrive\Desktop\Programming Apps\Python\python_work\BX_Liquidity_Forecasting\database\blackstone_data.db
+2025-02-14 20:23:01,452 INFO: Using DB_PATH = C:\Users\ryanl\OneDrive\Desktop\Programming Apps\Python\python_work\BX_Liquidity_Forecasting\database\blackstone_data.db
+2025-02-14 20:23:01,452 INFO: Using DB_PATH = C:\Users\ryanl\OneDrive\Desktop\Programming Apps\Python\python_work\BX_Liquidity_Forecasting\database\blackstone_data.db
+2025-02-14 20:23:01,452 INFO: Using DB_PATH = C:\Users\ryanl\OneDrive\Desktop\Programming Apps\Python\python_work\BX_Liquidity_Forecasting\database\blackstone_data.db
+2025-02-14 20:23:01,453 ERROR: Error loading data: unable to open database file
+2025-02-14 20:23:01,453 ERROR: Error loading data: unable to open database file
+2025-02-14 20:23:01,453 ERROR: Error loading data: unable to open database file
+2025-02-14 20:24:19,537 INFO: Final DB_PATH = C:\Users\ryanl\OneDrive\Desktop\Programming Apps\Python\python_work\KKR_Liquidity_Forecasting\database\blackstone_data.db
+2025-02-14 20:24:19,537 INFO: Final DB_PATH = C:\Users\ryanl\OneDrive\Desktop\Programming Apps\Python\python_work\KKR_Liquidity_Forecasting\database\blackstone_data.db
+2025-02-14 20:24:19,537 INFO: Final DB_PATH = C:\Users\ryanl\OneDrive\Desktop\Programming Apps\Python\python_work\KKR_Liquidity_Forecasting\database\blackstone_data.db
+2025-02-14 20:24:19,537 INFO: Final DB_PATH = C:\Users\ryanl\OneDrive\Desktop\Programming Apps\Python\python_work\KKR_Liquidity_Forecasting\database\blackstone_data.db
+2025-02-14 20:24:20,813 INFO: Using DB_PATH = C:\Users\ryanl\OneDrive\Desktop\Programming Apps\Python\python_work\KKR_Liquidity_Forecasting\database\blackstone_data.db
+2025-02-14 20:24:20,813 INFO: Using DB_PATH = C:\Users\ryanl\OneDrive\Desktop\Programming Apps\Python\python_work\KKR_Liquidity_Forecasting\database\blackstone_data.db
+2025-02-14 20:24:20,813 INFO: Using DB_PATH = C:\Users\ryanl\OneDrive\Desktop\Programming Apps\Python\python_work\KKR_Liquidity_Forecasting\database\blackstone_data.db
+2025-02-14 20:24:20,813 INFO: Using DB_PATH = C:\Users\ryanl\OneDrive\Desktop\Programming Apps\Python\python_work\KKR_Liquidity_Forecasting\database\blackstone_data.db
+2025-02-14 20:24:20,999 WARNING: Could not infer frequency from Date index.
+2025-02-14 20:24:20,999 WARNING: Could not infer frequency from Date index.
+2025-02-14 20:24:20,999 WARNING: Could not infer frequency from Date index.
+2025-02-14 20:24:20,999 WARNING: Could not infer frequency from Date index.
+2025-02-14 20:24:21,059 INFO: Tested SARIMAX order (0,1,0) AIC: 33942.677333612504
+2025-02-14 20:24:21,059 INFO: Tested SARIMAX order (0,1,0) AIC: 33942.677333612504
+2025-02-14 20:24:21,059 INFO: Tested SARIMAX order (0,1,0) AIC: 33942.677333612504
+2025-02-14 20:24:21,059 INFO: Tested SARIMAX order (0,1,0) AIC: 33942.677333612504
+2025-02-14 20:24:21,076 INFO: Tested SARIMAX order (0,1,1) AIC: 33911.87138919131
+2025-02-14 20:24:21,076 INFO: Tested SARIMAX order (0,1,1) AIC: 33911.87138919131
+2025-02-14 20:24:21,076 INFO: Tested SARIMAX order (0,1,1) AIC: 33911.87138919131
+2025-02-14 20:24:21,076 INFO: Tested SARIMAX order (0,1,1) AIC: 33911.87138919131
+2025-02-14 20:24:21,089 INFO: Tested SARIMAX order (0,1,2) AIC: 33881.07496051238
+2025-02-14 20:24:21,089 INFO: Tested SARIMAX order (0,1,2) AIC: 33881.07496051238
+2025-02-14 20:24:21,089 INFO: Tested SARIMAX order (0,1,2) AIC: 33881.07496051238
+2025-02-14 20:24:21,089 INFO: Tested SARIMAX order (0,1,2) AIC: 33881.07496051238
+2025-02-14 20:24:21,101 INFO: Tested SARIMAX order (1,1,0) AIC: 33944.67534422216
+2025-02-14 20:24:21,101 INFO: Tested SARIMAX order (1,1,0) AIC: 33944.67534422216
+2025-02-14 20:24:21,101 INFO: Tested SARIMAX order (1,1,0) AIC: 33944.67534422216
+2025-02-14 20:24:21,101 INFO: Tested SARIMAX order (1,1,0) AIC: 33944.67534422216
+2025-02-14 20:24:21,114 INFO: Tested SARIMAX order (1,1,1) AIC: 33913.87138919131
+2025-02-14 20:24:21,114 INFO: Tested SARIMAX order (1,1,1) AIC: 33913.87138919131
+2025-02-14 20:24:21,114 INFO: Tested SARIMAX order (1,1,1) AIC: 33913.87138919131
+2025-02-14 20:24:21,114 INFO: Tested SARIMAX order (1,1,1) AIC: 33913.87138919131
+2025-02-14 20:24:21,128 INFO: Tested SARIMAX order (1,1,2) AIC: 33883.07496051238
+2025-02-14 20:24:21,128 INFO: Tested SARIMAX order (1,1,2) AIC: 33883.07496051238
+2025-02-14 20:24:21,128 INFO: Tested SARIMAX order (1,1,2) AIC: 33883.07496051238
+2025-02-14 20:24:21,128 INFO: Tested SARIMAX order (1,1,2) AIC: 33883.07496051238
+2025-02-14 20:24:21,141 INFO: Tested SARIMAX order (2,1,0) AIC: 33913.86939251865
+2025-02-14 20:24:21,141 INFO: Tested SARIMAX order (2,1,0) AIC: 33913.86939251865
+2025-02-14 20:24:21,141 INFO: Tested SARIMAX order (2,1,0) AIC: 33913.86939251865
+2025-02-14 20:24:21,141 INFO: Tested SARIMAX order (2,1,0) AIC: 33913.86939251865
+2025-02-14 20:24:21,156 INFO: Tested SARIMAX order (2,1,1) AIC: 33915.87138919131
+2025-02-14 20:24:21,156 INFO: Tested SARIMAX order (2,1,1) AIC: 33915.87138919131
+2025-02-14 20:24:21,156 INFO: Tested SARIMAX order (2,1,1) AIC: 33915.87138919131
+2025-02-14 20:24:21,156 INFO: Tested SARIMAX order (2,1,1) AIC: 33915.87138919131
+2025-02-14 20:24:21,172 INFO: Tested SARIMAX order (2,1,2) AIC: 33885.07496051238
+2025-02-14 20:24:21,172 INFO: Tested SARIMAX order (2,1,2) AIC: 33885.07496051238
+2025-02-14 20:24:21,172 INFO: Tested SARIMAX order (2,1,2) AIC: 33885.07496051238
+2025-02-14 20:24:21,172 INFO: Tested SARIMAX order (2,1,2) AIC: 33885.07496051238
+2025-02-14 20:24:21,174 INFO: Selected SARIMAX order (0, 1, 2) with AIC: 33881.07496051238
+2025-02-14 20:24:21,174 INFO: Selected SARIMAX order (0, 1, 2) with AIC: 33881.07496051238
+2025-02-14 20:24:21,174 INFO: Selected SARIMAX order (0, 1, 2) with AIC: 33881.07496051238
+2025-02-14 20:24:21,174 INFO: Selected SARIMAX order (0, 1, 2) with AIC: 33881.07496051238
+2025-02-14 20:24:21,561 INFO: MAE: nan, RMSE: nan
+2025-02-14 20:24:21,561 INFO: MAE: nan, RMSE: nan
+2025-02-14 20:24:21,561 INFO: MAE: nan, RMSE: nan
+2025-02-14 20:24:21,561 INFO: MAE: nan, RMSE: nan
+2025-02-14 20:27:38,851 INFO: Final DB_PATH = C:\Users\ryanl\OneDrive\Desktop\Programming Apps\Python\python_work\BX_Liquidity_Forecasting\database\blackstone_data.db
+2025-02-14 20:27:38,851 INFO: Final DB_PATH = C:\Users\ryanl\OneDrive\Desktop\Programming Apps\Python\python_work\BX_Liquidity_Forecasting\database\blackstone_data.db
+2025-02-14 20:27:38,851 INFO: Final DB_PATH = C:\Users\ryanl\OneDrive\Desktop\Programming Apps\Python\python_work\BX_Liquidity_Forecasting\database\blackstone_data.db
+2025-02-14 20:27:38,851 INFO: Final DB_PATH = C:\Users\ryanl\OneDrive\Desktop\Programming Apps\Python\python_work\BX_Liquidity_Forecasting\database\blackstone_data.db
+2025-02-14 20:27:38,851 INFO: Final DB_PATH = C:\Users\ryanl\OneDrive\Desktop\Programming Apps\Python\python_work\BX_Liquidity_Forecasting\database\blackstone_data.db
+2025-02-14 20:27:40,449 INFO: Using DB_PATH = C:\Users\ryanl\OneDrive\Desktop\Programming Apps\Python\python_work\BX_Liquidity_Forecasting\database\blackstone_data.db
+2025-02-14 20:27:40,449 INFO: Using DB_PATH = C:\Users\ryanl\OneDrive\Desktop\Programming Apps\Python\python_work\BX_Liquidity_Forecasting\database\blackstone_data.db
+2025-02-14 20:27:40,449 INFO: Using DB_PATH = C:\Users\ryanl\OneDrive\Desktop\Programming Apps\Python\python_work\BX_Liquidity_Forecasting\database\blackstone_data.db
+2025-02-14 20:27:40,449 INFO: Using DB_PATH = C:\Users\ryanl\OneDrive\Desktop\Programming Apps\Python\python_work\BX_Liquidity_Forecasting\database\blackstone_data.db
+2025-02-14 20:27:40,449 INFO: Using DB_PATH = C:\Users\ryanl\OneDrive\Desktop\Programming Apps\Python\python_work\BX_Liquidity_Forecasting\database\blackstone_data.db
+2025-02-14 20:27:40,452 ERROR: Error loading data: unable to open database file
+2025-02-14 20:27:40,452 ERROR: Error loading data: unable to open database file
+2025-02-14 20:27:40,452 ERROR: Error loading data: unable to open database file
+2025-02-14 20:27:40,452 ERROR: Error loading data: unable to open database file
+2025-02-14 20:27:40,452 ERROR: Error loading data: unable to open database file
+2025-02-14 20:27:51,715 INFO: Final DB_PATH = C:\Users\ryanl\OneDrive\Desktop\Programming Apps\Python\python_work\KKR_Liquidity_Forecasting\database\blackstone_data.db
+2025-02-14 20:27:51,715 INFO: Final DB_PATH = C:\Users\ryanl\OneDrive\Desktop\Programming Apps\Python\python_work\KKR_Liquidity_Forecasting\database\blackstone_data.db
+2025-02-14 20:27:51,715 INFO: Final DB_PATH = C:\Users\ryanl\OneDrive\Desktop\Programming Apps\Python\python_work\KKR_Liquidity_Forecasting\database\blackstone_data.db
+2025-02-14 20:27:51,715 INFO: Final DB_PATH = C:\Users\ryanl\OneDrive\Desktop\Programming Apps\Python\python_work\KKR_Liquidity_Forecasting\database\blackstone_data.db
+2025-02-14 20:27:51,715 INFO: Final DB_PATH = C:\Users\ryanl\OneDrive\Desktop\Programming Apps\Python\python_work\KKR_Liquidity_Forecasting\database\blackstone_data.db
+2025-02-14 20:27:51,715 INFO: Final DB_PATH = C:\Users\ryanl\OneDrive\Desktop\Programming Apps\Python\python_work\KKR_Liquidity_Forecasting\database\blackstone_data.db
+2025-02-14 20:27:53,336 INFO: Using DB_PATH = C:\Users\ryanl\OneDrive\Desktop\Programming Apps\Python\python_work\KKR_Liquidity_Forecasting\database\blackstone_data.db
+2025-02-14 20:27:53,336 INFO: Using DB_PATH = C:\Users\ryanl\OneDrive\Desktop\Programming Apps\Python\python_work\KKR_Liquidity_Forecasting\database\blackstone_data.db
+2025-02-14 20:27:53,336 INFO: Using DB_PATH = C:\Users\ryanl\OneDrive\Desktop\Programming Apps\Python\python_work\KKR_Liquidity_Forecasting\database\blackstone_data.db
+2025-02-14 20:27:53,336 INFO: Using DB_PATH = C:\Users\ryanl\OneDrive\Desktop\Programming Apps\Python\python_work\KKR_Liquidity_Forecasting\database\blackstone_data.db
+2025-02-14 20:27:53,336 INFO: Using DB_PATH = C:\Users\ryanl\OneDrive\Desktop\Programming Apps\Python\python_work\KKR_Liquidity_Forecasting\database\blackstone_data.db
+2025-02-14 20:27:53,336 INFO: Using DB_PATH = C:\Users\ryanl\OneDrive\Desktop\Programming Apps\Python\python_work\KKR_Liquidity_Forecasting\database\blackstone_data.db
+2025-02-14 20:27:53,383 WARNING: Could not infer frequency from Date index. Setting frequency to 'D' (daily).
+2025-02-14 20:27:53,383 WARNING: Could not infer frequency from Date index. Setting frequency to 'D' (daily).
+2025-02-14 20:27:53,383 WARNING: Could not infer frequency from Date index. Setting frequency to 'D' (daily).
+2025-02-14 20:27:53,383 WARNING: Could not infer frequency from Date index. Setting frequency to 'D' (daily).
+2025-02-14 20:27:53,383 WARNING: Could not infer frequency from Date index. Setting frequency to 'D' (daily).
+2025-02-14 20:27:53,383 WARNING: Could not infer frequency from Date index. Setting frequency to 'D' (daily).
+2025-02-14 20:27:53,412 INFO: Tested SARIMAX order (0,1,0) AIC: 33942.677333612504
+2025-02-14 20:27:53,412 INFO: Tested SARIMAX order (0,1,0) AIC: 33942.677333612504
+2025-02-14 20:27:53,412 INFO: Tested SARIMAX order (0,1,0) AIC: 33942.677333612504
+2025-02-14 20:27:53,412 INFO: Tested SARIMAX order (0,1,0) AIC: 33942.677333612504
+2025-02-14 20:27:53,412 INFO: Tested SARIMAX order (0,1,0) AIC: 33942.677333612504
+2025-02-14 20:27:53,412 INFO: Tested SARIMAX order (0,1,0) AIC: 33942.677333612504
+2025-02-14 20:27:53,426 INFO: Tested SARIMAX order (0,1,1) AIC: 33911.87138919131
+2025-02-14 20:27:53,426 INFO: Tested SARIMAX order (0,1,1) AIC: 33911.87138919131
+2025-02-14 20:27:53,426 INFO: Tested SARIMAX order (0,1,1) AIC: 33911.87138919131
+2025-02-14 20:27:53,426 INFO: Tested SARIMAX order (0,1,1) AIC: 33911.87138919131
+2025-02-14 20:27:53,426 INFO: Tested SARIMAX order (0,1,1) AIC: 33911.87138919131
+2025-02-14 20:27:53,426 INFO: Tested SARIMAX order (0,1,1) AIC: 33911.87138919131
+2025-02-14 20:27:53,441 INFO: Tested SARIMAX order (0,1,2) AIC: 33881.07496051238
+2025-02-14 20:27:53,441 INFO: Tested SARIMAX order (0,1,2) AIC: 33881.07496051238
+2025-02-14 20:27:53,441 INFO: Tested SARIMAX order (0,1,2) AIC: 33881.07496051238
+2025-02-14 20:27:53,441 INFO: Tested SARIMAX order (0,1,2) AIC: 33881.07496051238
+2025-02-14 20:27:53,441 INFO: Tested SARIMAX order (0,1,2) AIC: 33881.07496051238
+2025-02-14 20:27:53,441 INFO: Tested SARIMAX order (0,1,2) AIC: 33881.07496051238
+2025-02-14 20:27:53,452 INFO: Tested SARIMAX order (1,1,0) AIC: 33944.67534422216
+2025-02-14 20:27:53,452 INFO: Tested SARIMAX order (1,1,0) AIC: 33944.67534422216
+2025-02-14 20:27:53,452 INFO: Tested SARIMAX order (1,1,0) AIC: 33944.67534422216
+2025-02-14 20:27:53,452 INFO: Tested SARIMAX order (1,1,0) AIC: 33944.67534422216
+2025-02-14 20:27:53,452 INFO: Tested SARIMAX order (1,1,0) AIC: 33944.67534422216
+2025-02-14 20:27:53,452 INFO: Tested SARIMAX order (1,1,0) AIC: 33944.67534422216
+2025-02-14 20:27:53,466 INFO: Tested SARIMAX order (1,1,1) AIC: 33913.87138919131
+2025-02-14 20:27:53,466 INFO: Tested SARIMAX order (1,1,1) AIC: 33913.87138919131
+2025-02-14 20:27:53,466 INFO: Tested SARIMAX order (1,1,1) AIC: 33913.87138919131
+2025-02-14 20:27:53,466 INFO: Tested SARIMAX order (1,1,1) AIC: 33913.87138919131
+2025-02-14 20:27:53,466 INFO: Tested SARIMAX order (1,1,1) AIC: 33913.87138919131
+2025-02-14 20:27:53,466 INFO: Tested SARIMAX order (1,1,1) AIC: 33913.87138919131
+2025-02-14 20:27:53,480 INFO: Tested SARIMAX order (1,1,2) AIC: 33883.07496051238
+2025-02-14 20:27:53,480 INFO: Tested SARIMAX order (1,1,2) AIC: 33883.07496051238
+2025-02-14 20:27:53,480 INFO: Tested SARIMAX order (1,1,2) AIC: 33883.07496051238
+2025-02-14 20:27:53,480 INFO: Tested SARIMAX order (1,1,2) AIC: 33883.07496051238
+2025-02-14 20:27:53,480 INFO: Tested SARIMAX order (1,1,2) AIC: 33883.07496051238
+2025-02-14 20:27:53,480 INFO: Tested SARIMAX order (1,1,2) AIC: 33883.07496051238
+2025-02-14 20:27:53,493 INFO: Tested SARIMAX order (2,1,0) AIC: 33913.86939251865
+2025-02-14 20:27:53,493 INFO: Tested SARIMAX order (2,1,0) AIC: 33913.86939251865
+2025-02-14 20:27:53,493 INFO: Tested SARIMAX order (2,1,0) AIC: 33913.86939251865
+2025-02-14 20:27:53,493 INFO: Tested SARIMAX order (2,1,0) AIC: 33913.86939251865
+2025-02-14 20:27:53,493 INFO: Tested SARIMAX order (2,1,0) AIC: 33913.86939251865
+2025-02-14 20:27:53,493 INFO: Tested SARIMAX order (2,1,0) AIC: 33913.86939251865
+2025-02-14 20:27:53,509 INFO: Tested SARIMAX order (2,1,1) AIC: 33915.87138919131
+2025-02-14 20:27:53,509 INFO: Tested SARIMAX order (2,1,1) AIC: 33915.87138919131
+2025-02-14 20:27:53,509 INFO: Tested SARIMAX order (2,1,1) AIC: 33915.87138919131
+2025-02-14 20:27:53,509 INFO: Tested SARIMAX order (2,1,1) AIC: 33915.87138919131
+2025-02-14 20:27:53,509 INFO: Tested SARIMAX order (2,1,1) AIC: 33915.87138919131
+2025-02-14 20:27:53,509 INFO: Tested SARIMAX order (2,1,1) AIC: 33915.87138919131
+2025-02-14 20:27:53,524 INFO: Tested SARIMAX order (2,1,2) AIC: 33885.07496051238
+2025-02-14 20:27:53,524 INFO: Tested SARIMAX order (2,1,2) AIC: 33885.07496051238
+2025-02-14 20:27:53,524 INFO: Tested SARIMAX order (2,1,2) AIC: 33885.07496051238
+2025-02-14 20:27:53,524 INFO: Tested SARIMAX order (2,1,2) AIC: 33885.07496051238
+2025-02-14 20:27:53,524 INFO: Tested SARIMAX order (2,1,2) AIC: 33885.07496051238
+2025-02-14 20:27:53,524 INFO: Tested SARIMAX order (2,1,2) AIC: 33885.07496051238
+2025-02-14 20:27:53,526 INFO: Selected SARIMAX order (0, 1, 2) with AIC: 33881.07496051238
+2025-02-14 20:27:53,526 INFO: Selected SARIMAX order (0, 1, 2) with AIC: 33881.07496051238
+2025-02-14 20:27:53,526 INFO: Selected SARIMAX order (0, 1, 2) with AIC: 33881.07496051238
+2025-02-14 20:27:53,526 INFO: Selected SARIMAX order (0, 1, 2) with AIC: 33881.07496051238
+2025-02-14 20:27:53,526 INFO: Selected SARIMAX order (0, 1, 2) with AIC: 33881.07496051238
+2025-02-14 20:27:53,526 INFO: Selected SARIMAX order (0, 1, 2) with AIC: 33881.07496051238
+2025-02-14 20:27:53,549 INFO: MAE: nan, RMSE: nan, MAPE: nan
+2025-02-14 20:27:53,549 INFO: MAE: nan, RMSE: nan, MAPE: nan
+2025-02-14 20:27:53,549 INFO: MAE: nan, RMSE: nan, MAPE: nan
+2025-02-14 20:27:53,549 INFO: MAE: nan, RMSE: nan, MAPE: nan
+2025-02-14 20:27:53,549 INFO: MAE: nan, RMSE: nan, MAPE: nan
+2025-02-14 20:27:53,549 INFO: MAE: nan, RMSE: nan, MAPE: nan
+2025-02-14 20:31:34,063 INFO: Final DB_PATH = C:\Users\ryanl\OneDrive\Desktop\Programming Apps\Python\python_work\BX_Liquidity_Forecasting\database\blackstone_data.db
+2025-02-14 20:31:34,063 INFO: Final DB_PATH = C:\Users\ryanl\OneDrive\Desktop\Programming Apps\Python\python_work\BX_Liquidity_Forecasting\database\blackstone_data.db
+2025-02-14 20:31:34,063 INFO: Final DB_PATH = C:\Users\ryanl\OneDrive\Desktop\Programming Apps\Python\python_work\BX_Liquidity_Forecasting\database\blackstone_data.db
+2025-02-14 20:31:34,063 INFO: Final DB_PATH = C:\Users\ryanl\OneDrive\Desktop\Programming Apps\Python\python_work\BX_Liquidity_Forecasting\database\blackstone_data.db
+2025-02-14 20:31:34,063 INFO: Final DB_PATH = C:\Users\ryanl\OneDrive\Desktop\Programming Apps\Python\python_work\BX_Liquidity_Forecasting\database\blackstone_data.db
+2025-02-14 20:31:34,063 INFO: Final DB_PATH = C:\Users\ryanl\OneDrive\Desktop\Programming Apps\Python\python_work\BX_Liquidity_Forecasting\database\blackstone_data.db
+2025-02-14 20:31:34,063 INFO: Final DB_PATH = C:\Users\ryanl\OneDrive\Desktop\Programming Apps\Python\python_work\BX_Liquidity_Forecasting\database\blackstone_data.db
+2025-02-14 20:31:36,338 INFO: Using DB_PATH = C:\Users\ryanl\OneDrive\Desktop\Programming Apps\Python\python_work\BX_Liquidity_Forecasting\database\blackstone_data.db
+2025-02-14 20:31:36,338 INFO: Using DB_PATH = C:\Users\ryanl\OneDrive\Desktop\Programming Apps\Python\python_work\BX_Liquidity_Forecasting\database\blackstone_data.db
+2025-02-14 20:31:36,338 INFO: Using DB_PATH = C:\Users\ryanl\OneDrive\Desktop\Programming Apps\Python\python_work\BX_Liquidity_Forecasting\database\blackstone_data.db
+2025-02-14 20:31:36,338 INFO: Using DB_PATH = C:\Users\ryanl\OneDrive\Desktop\Programming Apps\Python\python_work\BX_Liquidity_Forecasting\database\blackstone_data.db
+2025-02-14 20:31:36,338 INFO: Using DB_PATH = C:\Users\ryanl\OneDrive\Desktop\Programming Apps\Python\python_work\BX_Liquidity_Forecasting\database\blackstone_data.db
+2025-02-14 20:31:36,338 INFO: Using DB_PATH = C:\Users\ryanl\OneDrive\Desktop\Programming Apps\Python\python_work\BX_Liquidity_Forecasting\database\blackstone_data.db
+2025-02-14 20:31:36,338 INFO: Using DB_PATH = C:\Users\ryanl\OneDrive\Desktop\Programming Apps\Python\python_work\BX_Liquidity_Forecasting\database\blackstone_data.db
+2025-02-14 20:31:36,340 ERROR: Error loading data: unable to open database file
+2025-02-14 20:31:36,340 ERROR: Error loading data: unable to open database file
+2025-02-14 20:31:36,340 ERROR: Error loading data: unable to open database file
+2025-02-14 20:31:36,340 ERROR: Error loading data: unable to open database file
+2025-02-14 20:31:36,340 ERROR: Error loading data: unable to open database file
+2025-02-14 20:31:36,340 ERROR: Error loading data: unable to open database file
+2025-02-14 20:31:36,340 ERROR: Error loading data: unable to open database file
+2025-02-14 20:31:42,857 INFO: Final DB_PATH = C:\Users\ryanl\OneDrive\Desktop\Programming Apps\Python\python_work\KKR_Liquidity_Forecasting\database\blackstone_data.db
+2025-02-14 20:31:42,857 INFO: Final DB_PATH = C:\Users\ryanl\OneDrive\Desktop\Programming Apps\Python\python_work\KKR_Liquidity_Forecasting\database\blackstone_data.db
+2025-02-14 20:31:42,857 INFO: Final DB_PATH = C:\Users\ryanl\OneDrive\Desktop\Programming Apps\Python\python_work\KKR_Liquidity_Forecasting\database\blackstone_data.db
+2025-02-14 20:31:42,857 INFO: Final DB_PATH = C:\Users\ryanl\OneDrive\Desktop\Programming Apps\Python\python_work\KKR_Liquidity_Forecasting\database\blackstone_data.db
+2025-02-14 20:31:42,857 INFO: Final DB_PATH = C:\Users\ryanl\OneDrive\Desktop\Programming Apps\Python\python_work\KKR_Liquidity_Forecasting\database\blackstone_data.db
+2025-02-14 20:31:42,857 INFO: Final DB_PATH = C:\Users\ryanl\OneDrive\Desktop\Programming Apps\Python\python_work\KKR_Liquidity_Forecasting\database\blackstone_data.db
+2025-02-14 20:31:42,857 INFO: Final DB_PATH = C:\Users\ryanl\OneDrive\Desktop\Programming Apps\Python\python_work\KKR_Liquidity_Forecasting\database\blackstone_data.db
+2025-02-14 20:31:42,857 INFO: Final DB_PATH = C:\Users\ryanl\OneDrive\Desktop\Programming Apps\Python\python_work\KKR_Liquidity_Forecasting\database\blackstone_data.db
+2025-02-14 20:31:45,132 INFO: Using DB_PATH = C:\Users\ryanl\OneDrive\Desktop\Programming Apps\Python\python_work\KKR_Liquidity_Forecasting\database\blackstone_data.db
+2025-02-14 20:31:45,132 INFO: Using DB_PATH = C:\Users\ryanl\OneDrive\Desktop\Programming Apps\Python\python_work\KKR_Liquidity_Forecasting\database\blackstone_data.db
+2025-02-14 20:31:45,132 INFO: Using DB_PATH = C:\Users\ryanl\OneDrive\Desktop\Programming Apps\Python\python_work\KKR_Liquidity_Forecasting\database\blackstone_data.db
+2025-02-14 20:31:45,132 INFO: Using DB_PATH = C:\Users\ryanl\OneDrive\Desktop\Programming Apps\Python\python_work\KKR_Liquidity_Forecasting\database\blackstone_data.db
+2025-02-14 20:31:45,132 INFO: Using DB_PATH = C:\Users\ryanl\OneDrive\Desktop\Programming Apps\Python\python_work\KKR_Liquidity_Forecasting\database\blackstone_data.db
+2025-02-14 20:31:45,132 INFO: Using DB_PATH = C:\Users\ryanl\OneDrive\Desktop\Programming Apps\Python\python_work\KKR_Liquidity_Forecasting\database\blackstone_data.db
+2025-02-14 20:31:45,132 INFO: Using DB_PATH = C:\Users\ryanl\OneDrive\Desktop\Programming Apps\Python\python_work\KKR_Liquidity_Forecasting\database\blackstone_data.db
+2025-02-14 20:31:45,132 INFO: Using DB_PATH = C:\Users\ryanl\OneDrive\Desktop\Programming Apps\Python\python_work\KKR_Liquidity_Forecasting\database\blackstone_data.db
+2025-02-14 20:31:45,182 WARNING: Could not infer frequency from Date index. Setting frequency to 'D' (daily).
+2025-02-14 20:31:45,182 WARNING: Could not infer frequency from Date index. Setting frequency to 'D' (daily).
+2025-02-14 20:31:45,182 WARNING: Could not infer frequency from Date index. Setting frequency to 'D' (daily).
+2025-02-14 20:31:45,182 WARNING: Could not infer frequency from Date index. Setting frequency to 'D' (daily).
+2025-02-14 20:31:45,182 WARNING: Could not infer frequency from Date index. Setting frequency to 'D' (daily).
+2025-02-14 20:31:45,182 WARNING: Could not infer frequency from Date index. Setting frequency to 'D' (daily).
+2025-02-14 20:31:45,182 WARNING: Could not infer frequency from Date index. Setting frequency to 'D' (daily).
+2025-02-14 20:31:45,182 WARNING: Could not infer frequency from Date index. Setting frequency to 'D' (daily).
+2025-02-14 20:31:45,193 INFO: Removed 0 outlier rows based on z-score.
+2025-02-14 20:31:45,193 INFO: Removed 0 outlier rows based on z-score.
+2025-02-14 20:31:45,193 INFO: Removed 0 outlier rows based on z-score.
+2025-02-14 20:31:45,193 INFO: Removed 0 outlier rows based on z-score.
+2025-02-14 20:31:45,193 INFO: Removed 0 outlier rows based on z-score.
+2025-02-14 20:31:45,193 INFO: Removed 0 outlier rows based on z-score.
+2025-02-14 20:31:45,193 INFO: Removed 0 outlier rows based on z-score.
+2025-02-14 20:31:45,193 INFO: Removed 0 outlier rows based on z-score.
+2025-02-14 20:31:45,207 INFO: Tested SARIMAX order (0,1,0) seasonal (0, 0, 0, 7) AIC: 33942.677333612504
+2025-02-14 20:31:45,207 INFO: Tested SARIMAX order (0,1,0) seasonal (0, 0, 0, 7) AIC: 33942.677333612504
+2025-02-14 20:31:45,207 INFO: Tested SARIMAX order (0,1,0) seasonal (0, 0, 0, 7) AIC: 33942.677333612504
+2025-02-14 20:31:45,207 INFO: Tested SARIMAX order (0,1,0) seasonal (0, 0, 0, 7) AIC: 33942.677333612504
+2025-02-14 20:31:45,207 INFO: Tested SARIMAX order (0,1,0) seasonal (0, 0, 0, 7) AIC: 33942.677333612504
+2025-02-14 20:31:45,207 INFO: Tested SARIMAX order (0,1,0) seasonal (0, 0, 0, 7) AIC: 33942.677333612504
+2025-02-14 20:31:45,207 INFO: Tested SARIMAX order (0,1,0) seasonal (0, 0, 0, 7) AIC: 33942.677333612504
+2025-02-14 20:31:45,207 INFO: Tested SARIMAX order (0,1,0) seasonal (0, 0, 0, 7) AIC: 33942.677333612504
+2025-02-14 20:31:45,239 INFO: Tested SARIMAX order (0,1,0) seasonal (1, 0, 1, 7) AIC: 33717.11193507563
+2025-02-14 20:31:45,239 INFO: Tested SARIMAX order (0,1,0) seasonal (1, 0, 1, 7) AIC: 33717.11193507563
+2025-02-14 20:31:45,239 INFO: Tested SARIMAX order (0,1,0) seasonal (1, 0, 1, 7) AIC: 33717.11193507563
+2025-02-14 20:31:45,239 INFO: Tested SARIMAX order (0,1,0) seasonal (1, 0, 1, 7) AIC: 33717.11193507563
+2025-02-14 20:31:45,239 INFO: Tested SARIMAX order (0,1,0) seasonal (1, 0, 1, 7) AIC: 33717.11193507563
+2025-02-14 20:31:45,239 INFO: Tested SARIMAX order (0,1,0) seasonal (1, 0, 1, 7) AIC: 33717.11193507563
+2025-02-14 20:31:45,239 INFO: Tested SARIMAX order (0,1,0) seasonal (1, 0, 1, 7) AIC: 33717.11193507563
+2025-02-14 20:31:45,239 INFO: Tested SARIMAX order (0,1,0) seasonal (1, 0, 1, 7) AIC: 33717.11193507563
+2025-02-14 20:31:45,255 INFO: Tested SARIMAX order (0,1,1) seasonal (0, 0, 0, 7) AIC: 33911.87138919131
+2025-02-14 20:31:45,255 INFO: Tested SARIMAX order (0,1,1) seasonal (0, 0, 0, 7) AIC: 33911.87138919131
+2025-02-14 20:31:45,255 INFO: Tested SARIMAX order (0,1,1) seasonal (0, 0, 0, 7) AIC: 33911.87138919131
+2025-02-14 20:31:45,255 INFO: Tested SARIMAX order (0,1,1) seasonal (0, 0, 0, 7) AIC: 33911.87138919131
+2025-02-14 20:31:45,255 INFO: Tested SARIMAX order (0,1,1) seasonal (0, 0, 0, 7) AIC: 33911.87138919131
+2025-02-14 20:31:45,255 INFO: Tested SARIMAX order (0,1,1) seasonal (0, 0, 0, 7) AIC: 33911.87138919131
+2025-02-14 20:31:45,255 INFO: Tested SARIMAX order (0,1,1) seasonal (0, 0, 0, 7) AIC: 33911.87138919131
+2025-02-14 20:31:45,255 INFO: Tested SARIMAX order (0,1,1) seasonal (0, 0, 0, 7) AIC: 33911.87138919131
+2025-02-14 20:31:45,281 INFO: Tested SARIMAX order (0,1,1) seasonal (1, 0, 1, 7) AIC: 33686.21226683404
+2025-02-14 20:31:45,281 INFO: Tested SARIMAX order (0,1,1) seasonal (1, 0, 1, 7) AIC: 33686.21226683404
+2025-02-14 20:31:45,281 INFO: Tested SARIMAX order (0,1,1) seasonal (1, 0, 1, 7) AIC: 33686.21226683404
+2025-02-14 20:31:45,281 INFO: Tested SARIMAX order (0,1,1) seasonal (1, 0, 1, 7) AIC: 33686.21226683404
+2025-02-14 20:31:45,281 INFO: Tested SARIMAX order (0,1,1) seasonal (1, 0, 1, 7) AIC: 33686.21226683404
+2025-02-14 20:31:45,281 INFO: Tested SARIMAX order (0,1,1) seasonal (1, 0, 1, 7) AIC: 33686.21226683404
+2025-02-14 20:31:45,281 INFO: Tested SARIMAX order (0,1,1) seasonal (1, 0, 1, 7) AIC: 33686.21226683404
+2025-02-14 20:31:45,281 INFO: Tested SARIMAX order (0,1,1) seasonal (1, 0, 1, 7) AIC: 33686.21226683404
+2025-02-14 20:31:45,299 INFO: Tested SARIMAX order (0,1,2) seasonal (0, 0, 0, 7) AIC: 33881.07496051238
+2025-02-14 20:31:45,299 INFO: Tested SARIMAX order (0,1,2) seasonal (0, 0, 0, 7) AIC: 33881.07496051238
+2025-02-14 20:31:45,299 INFO: Tested SARIMAX order (0,1,2) seasonal (0, 0, 0, 7) AIC: 33881.07496051238
+2025-02-14 20:31:45,299 INFO: Tested SARIMAX order (0,1,2) seasonal (0, 0, 0, 7) AIC: 33881.07496051238
+2025-02-14 20:31:45,299 INFO: Tested SARIMAX order (0,1,2) seasonal (0, 0, 0, 7) AIC: 33881.07496051238
+2025-02-14 20:31:45,299 INFO: Tested SARIMAX order (0,1,2) seasonal (0, 0, 0, 7) AIC: 33881.07496051238
+2025-02-14 20:31:45,299 INFO: Tested SARIMAX order (0,1,2) seasonal (0, 0, 0, 7) AIC: 33881.07496051238
+2025-02-14 20:31:45,299 INFO: Tested SARIMAX order (0,1,2) seasonal (0, 0, 0, 7) AIC: 33881.07496051238
+2025-02-14 20:31:45,327 INFO: Tested SARIMAX order (0,1,2) seasonal (1, 0, 1, 7) AIC: 33655.38781008963
+2025-02-14 20:31:45,327 INFO: Tested SARIMAX order (0,1,2) seasonal (1, 0, 1, 7) AIC: 33655.38781008963
+2025-02-14 20:31:45,327 INFO: Tested SARIMAX order (0,1,2) seasonal (1, 0, 1, 7) AIC: 33655.38781008963
+2025-02-14 20:31:45,327 INFO: Tested SARIMAX order (0,1,2) seasonal (1, 0, 1, 7) AIC: 33655.38781008963
+2025-02-14 20:31:45,327 INFO: Tested SARIMAX order (0,1,2) seasonal (1, 0, 1, 7) AIC: 33655.38781008963
+2025-02-14 20:31:45,327 INFO: Tested SARIMAX order (0,1,2) seasonal (1, 0, 1, 7) AIC: 33655.38781008963
+2025-02-14 20:31:45,327 INFO: Tested SARIMAX order (0,1,2) seasonal (1, 0, 1, 7) AIC: 33655.38781008963
+2025-02-14 20:31:45,327 INFO: Tested SARIMAX order (0,1,2) seasonal (1, 0, 1, 7) AIC: 33655.38781008963
+2025-02-14 20:31:45,343 INFO: Tested SARIMAX order (1,1,0) seasonal (0, 0, 0, 7) AIC: 33944.67534422216
+2025-02-14 20:31:45,343 INFO: Tested SARIMAX order (1,1,0) seasonal (0, 0, 0, 7) AIC: 33944.67534422216
+2025-02-14 20:31:45,343 INFO: Tested SARIMAX order (1,1,0) seasonal (0, 0, 0, 7) AIC: 33944.67534422216
+2025-02-14 20:31:45,343 INFO: Tested SARIMAX order (1,1,0) seasonal (0, 0, 0, 7) AIC: 33944.67534422216
+2025-02-14 20:31:45,343 INFO: Tested SARIMAX order (1,1,0) seasonal (0, 0, 0, 7) AIC: 33944.67534422216
+2025-02-14 20:31:45,343 INFO: Tested SARIMAX order (1,1,0) seasonal (0, 0, 0, 7) AIC: 33944.67534422216
+2025-02-14 20:31:45,343 INFO: Tested SARIMAX order (1,1,0) seasonal (0, 0, 0, 7) AIC: 33944.67534422216
+2025-02-14 20:31:45,343 INFO: Tested SARIMAX order (1,1,0) seasonal (0, 0, 0, 7) AIC: 33944.67534422216
+2025-02-14 20:31:45,369 INFO: Tested SARIMAX order (1,1,0) seasonal (1, 0, 1, 7) AIC: 33719.03716951145
+2025-02-14 20:31:45,369 INFO: Tested SARIMAX order (1,1,0) seasonal (1, 0, 1, 7) AIC: 33719.03716951145
+2025-02-14 20:31:45,369 INFO: Tested SARIMAX order (1,1,0) seasonal (1, 0, 1, 7) AIC: 33719.03716951145
+2025-02-14 20:31:45,369 INFO: Tested SARIMAX order (1,1,0) seasonal (1, 0, 1, 7) AIC: 33719.03716951145
+2025-02-14 20:31:45,369 INFO: Tested SARIMAX order (1,1,0) seasonal (1, 0, 1, 7) AIC: 33719.03716951145
+2025-02-14 20:31:45,369 INFO: Tested SARIMAX order (1,1,0) seasonal (1, 0, 1, 7) AIC: 33719.03716951145
+2025-02-14 20:31:45,369 INFO: Tested SARIMAX order (1,1,0) seasonal (1, 0, 1, 7) AIC: 33719.03716951145
+2025-02-14 20:31:45,369 INFO: Tested SARIMAX order (1,1,0) seasonal (1, 0, 1, 7) AIC: 33719.03716951145
+2025-02-14 20:31:45,385 INFO: Tested SARIMAX order (1,1,1) seasonal (0, 0, 0, 7) AIC: 33913.87138919131
+2025-02-14 20:31:45,385 INFO: Tested SARIMAX order (1,1,1) seasonal (0, 0, 0, 7) AIC: 33913.87138919131
+2025-02-14 20:31:45,385 INFO: Tested SARIMAX order (1,1,1) seasonal (0, 0, 0, 7) AIC: 33913.87138919131
+2025-02-14 20:31:45,385 INFO: Tested SARIMAX order (1,1,1) seasonal (0, 0, 0, 7) AIC: 33913.87138919131
+2025-02-14 20:31:45,385 INFO: Tested SARIMAX order (1,1,1) seasonal (0, 0, 0, 7) AIC: 33913.87138919131
+2025-02-14 20:31:45,385 INFO: Tested SARIMAX order (1,1,1) seasonal (0, 0, 0, 7) AIC: 33913.87138919131
+2025-02-14 20:31:45,385 INFO: Tested SARIMAX order (1,1,1) seasonal (0, 0, 0, 7) AIC: 33913.87138919131
+2025-02-14 20:31:45,385 INFO: Tested SARIMAX order (1,1,1) seasonal (0, 0, 0, 7) AIC: 33913.87138919131
+2025-02-14 20:31:45,414 INFO: Tested SARIMAX order (1,1,1) seasonal (1, 0, 1, 7) AIC: 33688.21226683404
+2025-02-14 20:31:45,414 INFO: Tested SARIMAX order (1,1,1) seasonal (1, 0, 1, 7) AIC: 33688.21226683404
+2025-02-14 20:31:45,414 INFO: Tested SARIMAX order (1,1,1) seasonal (1, 0, 1, 7) AIC: 33688.21226683404
+2025-02-14 20:31:45,414 INFO: Tested SARIMAX order (1,1,1) seasonal (1, 0, 1, 7) AIC: 33688.21226683404
+2025-02-14 20:31:45,414 INFO: Tested SARIMAX order (1,1,1) seasonal (1, 0, 1, 7) AIC: 33688.21226683404
+2025-02-14 20:31:45,414 INFO: Tested SARIMAX order (1,1,1) seasonal (1, 0, 1, 7) AIC: 33688.21226683404
+2025-02-14 20:31:45,414 INFO: Tested SARIMAX order (1,1,1) seasonal (1, 0, 1, 7) AIC: 33688.21226683404
+2025-02-14 20:31:45,414 INFO: Tested SARIMAX order (1,1,1) seasonal (1, 0, 1, 7) AIC: 33688.21226683404
+2025-02-14 20:31:45,433 INFO: Tested SARIMAX order (1,1,2) seasonal (0, 0, 0, 7) AIC: 33883.07496051238
+2025-02-14 20:31:45,433 INFO: Tested SARIMAX order (1,1,2) seasonal (0, 0, 0, 7) AIC: 33883.07496051238
+2025-02-14 20:31:45,433 INFO: Tested SARIMAX order (1,1,2) seasonal (0, 0, 0, 7) AIC: 33883.07496051238
+2025-02-14 20:31:45,433 INFO: Tested SARIMAX order (1,1,2) seasonal (0, 0, 0, 7) AIC: 33883.07496051238
+2025-02-14 20:31:45,433 INFO: Tested SARIMAX order (1,1,2) seasonal (0, 0, 0, 7) AIC: 33883.07496051238
+2025-02-14 20:31:45,433 INFO: Tested SARIMAX order (1,1,2) seasonal (0, 0, 0, 7) AIC: 33883.07496051238
+2025-02-14 20:31:45,433 INFO: Tested SARIMAX order (1,1,2) seasonal (0, 0, 0, 7) AIC: 33883.07496051238
+2025-02-14 20:31:45,433 INFO: Tested SARIMAX order (1,1,2) seasonal (0, 0, 0, 7) AIC: 33883.07496051238
+2025-02-14 20:31:45,468 INFO: Tested SARIMAX order (1,1,2) seasonal (1, 0, 1, 7) AIC: 33657.38781008963
+2025-02-14 20:31:45,468 INFO: Tested SARIMAX order (1,1,2) seasonal (1, 0, 1, 7) AIC: 33657.38781008963
+2025-02-14 20:31:45,468 INFO: Tested SARIMAX order (1,1,2) seasonal (1, 0, 1, 7) AIC: 33657.38781008963
+2025-02-14 20:31:45,468 INFO: Tested SARIMAX order (1,1,2) seasonal (1, 0, 1, 7) AIC: 33657.38781008963
+2025-02-14 20:31:45,468 INFO: Tested SARIMAX order (1,1,2) seasonal (1, 0, 1, 7) AIC: 33657.38781008963
+2025-02-14 20:31:45,468 INFO: Tested SARIMAX order (1,1,2) seasonal (1, 0, 1, 7) AIC: 33657.38781008963
+2025-02-14 20:31:45,468 INFO: Tested SARIMAX order (1,1,2) seasonal (1, 0, 1, 7) AIC: 33657.38781008963
+2025-02-14 20:31:45,468 INFO: Tested SARIMAX order (1,1,2) seasonal (1, 0, 1, 7) AIC: 33657.38781008963
+2025-02-14 20:31:45,485 INFO: Tested SARIMAX order (2,1,0) seasonal (0, 0, 0, 7) AIC: 33913.86939251865
+2025-02-14 20:31:45,485 INFO: Tested SARIMAX order (2,1,0) seasonal (0, 0, 0, 7) AIC: 33913.86939251865
+2025-02-14 20:31:45,485 INFO: Tested SARIMAX order (2,1,0) seasonal (0, 0, 0, 7) AIC: 33913.86939251865
+2025-02-14 20:31:45,485 INFO: Tested SARIMAX order (2,1,0) seasonal (0, 0, 0, 7) AIC: 33913.86939251865
+2025-02-14 20:31:45,485 INFO: Tested SARIMAX order (2,1,0) seasonal (0, 0, 0, 7) AIC: 33913.86939251865
+2025-02-14 20:31:45,485 INFO: Tested SARIMAX order (2,1,0) seasonal (0, 0, 0, 7) AIC: 33913.86939251865
+2025-02-14 20:31:45,485 INFO: Tested SARIMAX order (2,1,0) seasonal (0, 0, 0, 7) AIC: 33913.86939251865
+2025-02-14 20:31:45,485 INFO: Tested SARIMAX order (2,1,0) seasonal (0, 0, 0, 7) AIC: 33913.86939251865
+2025-02-14 20:31:45,512 INFO: Tested SARIMAX order (2,1,0) seasonal (1, 0, 1, 7) AIC: 33688.22424222191
+2025-02-14 20:31:45,512 INFO: Tested SARIMAX order (2,1,0) seasonal (1, 0, 1, 7) AIC: 33688.22424222191
+2025-02-14 20:31:45,512 INFO: Tested SARIMAX order (2,1,0) seasonal (1, 0, 1, 7) AIC: 33688.22424222191
+2025-02-14 20:31:45,512 INFO: Tested SARIMAX order (2,1,0) seasonal (1, 0, 1, 7) AIC: 33688.22424222191
+2025-02-14 20:31:45,512 INFO: Tested SARIMAX order (2,1,0) seasonal (1, 0, 1, 7) AIC: 33688.22424222191
+2025-02-14 20:31:45,512 INFO: Tested SARIMAX order (2,1,0) seasonal (1, 0, 1, 7) AIC: 33688.22424222191
+2025-02-14 20:31:45,512 INFO: Tested SARIMAX order (2,1,0) seasonal (1, 0, 1, 7) AIC: 33688.22424222191
+2025-02-14 20:31:45,512 INFO: Tested SARIMAX order (2,1,0) seasonal (1, 0, 1, 7) AIC: 33688.22424222191
+2025-02-14 20:31:45,531 INFO: Tested SARIMAX order (2,1,1) seasonal (0, 0, 0, 7) AIC: 33915.87138919131
+2025-02-14 20:31:45,531 INFO: Tested SARIMAX order (2,1,1) seasonal (0, 0, 0, 7) AIC: 33915.87138919131
+2025-02-14 20:31:45,531 INFO: Tested SARIMAX order (2,1,1) seasonal (0, 0, 0, 7) AIC: 33915.87138919131
+2025-02-14 20:31:45,531 INFO: Tested SARIMAX order (2,1,1) seasonal (0, 0, 0, 7) AIC: 33915.87138919131
+2025-02-14 20:31:45,531 INFO: Tested SARIMAX order (2,1,1) seasonal (0, 0, 0, 7) AIC: 33915.87138919131
+2025-02-14 20:31:45,531 INFO: Tested SARIMAX order (2,1,1) seasonal (0, 0, 0, 7) AIC: 33915.87138919131
+2025-02-14 20:31:45,531 INFO: Tested SARIMAX order (2,1,1) seasonal (0, 0, 0, 7) AIC: 33915.87138919131
+2025-02-14 20:31:45,531 INFO: Tested SARIMAX order (2,1,1) seasonal (0, 0, 0, 7) AIC: 33915.87138919131
+2025-02-14 20:31:45,563 INFO: Tested SARIMAX order (2,1,1) seasonal (1, 0, 1, 7) AIC: 33690.21226683404
+2025-02-14 20:31:45,563 INFO: Tested SARIMAX order (2,1,1) seasonal (1, 0, 1, 7) AIC: 33690.21226683404
+2025-02-14 20:31:45,563 INFO: Tested SARIMAX order (2,1,1) seasonal (1, 0, 1, 7) AIC: 33690.21226683404
+2025-02-14 20:31:45,563 INFO: Tested SARIMAX order (2,1,1) seasonal (1, 0, 1, 7) AIC: 33690.21226683404
+2025-02-14 20:31:45,563 INFO: Tested SARIMAX order (2,1,1) seasonal (1, 0, 1, 7) AIC: 33690.21226683404
+2025-02-14 20:31:45,563 INFO: Tested SARIMAX order (2,1,1) seasonal (1, 0, 1, 7) AIC: 33690.21226683404
+2025-02-14 20:31:45,563 INFO: Tested SARIMAX order (2,1,1) seasonal (1, 0, 1, 7) AIC: 33690.21226683404
+2025-02-14 20:31:45,563 INFO: Tested SARIMAX order (2,1,1) seasonal (1, 0, 1, 7) AIC: 33690.21226683404
+2025-02-14 20:31:45,584 INFO: Tested SARIMAX order (2,1,2) seasonal (0, 0, 0, 7) AIC: 33885.07496051238
+2025-02-14 20:31:45,584 INFO: Tested SARIMAX order (2,1,2) seasonal (0, 0, 0, 7) AIC: 33885.07496051238
+2025-02-14 20:31:45,584 INFO: Tested SARIMAX order (2,1,2) seasonal (0, 0, 0, 7) AIC: 33885.07496051238
+2025-02-14 20:31:45,584 INFO: Tested SARIMAX order (2,1,2) seasonal (0, 0, 0, 7) AIC: 33885.07496051238
+2025-02-14 20:31:45,584 INFO: Tested SARIMAX order (2,1,2) seasonal (0, 0, 0, 7) AIC: 33885.07496051238
+2025-02-14 20:31:45,584 INFO: Tested SARIMAX order (2,1,2) seasonal (0, 0, 0, 7) AIC: 33885.07496051238
+2025-02-14 20:31:45,584 INFO: Tested SARIMAX order (2,1,2) seasonal (0, 0, 0, 7) AIC: 33885.07496051238
+2025-02-14 20:31:45,584 INFO: Tested SARIMAX order (2,1,2) seasonal (0, 0, 0, 7) AIC: 33885.07496051238
+2025-02-14 20:31:45,619 INFO: Tested SARIMAX order (2,1,2) seasonal (1, 0, 1, 7) AIC: 33659.38781008963
+2025-02-14 20:31:45,619 INFO: Tested SARIMAX order (2,1,2) seasonal (1, 0, 1, 7) AIC: 33659.38781008963
+2025-02-14 20:31:45,619 INFO: Tested SARIMAX order (2,1,2) seasonal (1, 0, 1, 7) AIC: 33659.38781008963
+2025-02-14 20:31:45,619 INFO: Tested SARIMAX order (2,1,2) seasonal (1, 0, 1, 7) AIC: 33659.38781008963
+2025-02-14 20:31:45,619 INFO: Tested SARIMAX order (2,1,2) seasonal (1, 0, 1, 7) AIC: 33659.38781008963
+2025-02-14 20:31:45,619 INFO: Tested SARIMAX order (2,1,2) seasonal (1, 0, 1, 7) AIC: 33659.38781008963
+2025-02-14 20:31:45,619 INFO: Tested SARIMAX order (2,1,2) seasonal (1, 0, 1, 7) AIC: 33659.38781008963
+2025-02-14 20:31:45,619 INFO: Tested SARIMAX order (2,1,2) seasonal (1, 0, 1, 7) AIC: 33659.38781008963
+2025-02-14 20:31:45,622 INFO: Selected SARIMAX order (0, 1, 2) and seasonal_order (1, 0, 1, 7) with AIC: 33655.38781008963
+2025-02-14 20:31:45,622 INFO: Selected SARIMAX order (0, 1, 2) and seasonal_order (1, 0, 1, 7) with AIC: 33655.38781008963
+2025-02-14 20:31:45,622 INFO: Selected SARIMAX order (0, 1, 2) and seasonal_order (1, 0, 1, 7) with AIC: 33655.38781008963
+2025-02-14 20:31:45,622 INFO: Selected SARIMAX order (0, 1, 2) and seasonal_order (1, 0, 1, 7) with AIC: 33655.38781008963
+2025-02-14 20:31:45,622 INFO: Selected SARIMAX order (0, 1, 2) and seasonal_order (1, 0, 1, 7) with AIC: 33655.38781008963
+2025-02-14 20:31:45,622 INFO: Selected SARIMAX order (0, 1, 2) and seasonal_order (1, 0, 1, 7) with AIC: 33655.38781008963
+2025-02-14 20:31:45,622 INFO: Selected SARIMAX order (0, 1, 2) and seasonal_order (1, 0, 1, 7) with AIC: 33655.38781008963
+2025-02-14 20:31:45,622 INFO: Selected SARIMAX order (0, 1, 2) and seasonal_order (1, 0, 1, 7) with AIC: 33655.38781008963
+2025-02-14 20:31:45,657 INFO: MAE: 220925635.186588, RMSE: 221807577.35672185, MAPE: 1342.7489742597013
+2025-02-14 20:31:45,657 INFO: MAE: 220925635.186588, RMSE: 221807577.35672185, MAPE: 1342.7489742597013
+2025-02-14 20:31:45,657 INFO: MAE: 220925635.186588, RMSE: 221807577.35672185, MAPE: 1342.7489742597013
+2025-02-14 20:31:45,657 INFO: MAE: 220925635.186588, RMSE: 221807577.35672185, MAPE: 1342.7489742597013
+2025-02-14 20:31:45,657 INFO: MAE: 220925635.186588, RMSE: 221807577.35672185, MAPE: 1342.7489742597013
+2025-02-14 20:31:45,657 INFO: MAE: 220925635.186588, RMSE: 221807577.35672185, MAPE: 1342.7489742597013
+2025-02-14 20:31:45,657 INFO: MAE: 220925635.186588, RMSE: 221807577.35672185, MAPE: 1342.7489742597013
+2025-02-14 20:31:45,657 INFO: MAE: 220925635.186588, RMSE: 221807577.35672185, MAPE: 1342.7489742597013
