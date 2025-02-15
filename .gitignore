@@ -1,1 +1,41 @@
-constants.py    
+# Ignore Python cache files
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# Ignore virtual environment
+venv/
+pyvenv.cfg
+
+# Ignore database files
+*.db
+*.sqlite3
+
+# Ignore logs
+*.log
+
+# Ignore output data
+output_data/
+plots/
+
+# Ignore environment and settings files
+*.env
+api_settings/
+constants.py
+config.py
+
+# Ignore IDE and OS files
+.vscode/
+*.swp
+*.swo
+.DS_Store
+
+# Ignore compiled Python files
+*.egg-info/
+*.egg
+*.manifest
+*.spec
+
+# Ignore Jupyter notebook checkpoints
+.ipynb_checkpoints/

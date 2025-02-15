@@ -135,3 +135,48 @@
 </body>
 </html>
 
+2025-02-15 11:57:12,710 - INFO - Fetching KKR filings from SEC API
+2025-02-15 11:57:13,076 - ERROR - Error fetching data from SEC API: 404 - <!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Error</title>
+</head>
+<body>
+<pre>Cannot POST /filings</pre>
+</body>
+</html>
+
+2025-02-15 12:13:36,554 - INFO - Fetching KKR filings from SEC API
+2025-02-15 12:13:37,187 - ERROR - Error fetching data from SEC API: 404 - <!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Error</title>
+</head>
+<body>
+<pre>Cannot POST /filings</pre>
+</body>
+</html>
+
+2025-02-15 12:14:52,784 - INFO - Starting to fetch data from FRED API
+2025-02-15 12:14:52,784 - ERROR - Error fetching '10Y Treasury Yield' (ID: DGS10) from FRED: Fred.get_series() missing 1 required positional argument: 'series_id'
+2025-02-15 12:14:52,784 - ERROR - Error fetching '5Y Treasury Yield' (ID: DGS5) from FRED: Fred.get_series() missing 1 required positional argument: 'series_id'
+2025-02-15 12:14:52,784 - ERROR - Error fetching '2Y Treasury Yield' (ID: DGS2) from FRED: Fred.get_series() missing 1 required positional argument: 'series_id'
+2025-02-15 12:14:52,784 - ERROR - Error fetching '30Y Treasury Yield' (ID: DGS30) from FRED: Fred.get_series() missing 1 required positional argument: 'series_id'
+2025-02-15 12:14:52,784 - ERROR - Error fetching 'CPI' (ID: CPIAUCSL) from FRED: Fred.get_series() missing 1 required positional argument: 'series_id'
+2025-02-15 12:14:52,784 - ERROR - Error fetching 'BAA Corporate Bond Spread' (ID: BAA10Y) from FRED: Fred.get_series() missing 1 required positional argument: 'series_id'
+2025-02-15 12:14:52,784 - ERROR - Error fetching 'High Yield Bond Index' (ID: BAMLH0A0HYM2) from FRED: Fred.get_series() missing 1 required positional argument: 'series_id'
+2025-02-15 12:14:52,871 - INFO - Macroeconomic data successfully stored in SQL database.
+2025-02-15 12:19:44,727 - INFO - Fetching KKR filings from SEC API
+2025-02-15 12:19:45,072 - ERROR - Error fetching data from SEC API: 404 - <!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Error</title>
+</head>
+<body>
+<pre>Cannot POST /filings</pre>
+</body>
+</html>
+
