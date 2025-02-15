@@ -3,7 +3,7 @@ import pandas as pd
 from utils.db_utils import store_dataframe
 from utils.logging_utils import setup_logging, log_info, log_error  # Centralized logging import
 
-API_KEY = "167b0f020738341948c35033b570748e599f5e632b62593d64e1c926967d28ac"
+API_KEY = "6c9f0ac36786b37e718bd67d7544e6c884288b1689398bf749f7c79e5d070d39"
 BASE_URL = "https://api.sec-api.io"
 
 def list_kkr_filings():
