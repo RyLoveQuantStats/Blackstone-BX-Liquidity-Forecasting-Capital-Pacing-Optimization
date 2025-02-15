@@ -1,97 +1,75 @@
 '''
-Fetches the most recent KKR filings (10-K and 10-Q) from the SEC API, 
-extracts their financial data, merges the data into one DataFrame, 
-cleans the data, and stores it in the database.
+Fetches the most recent KKR financial statements from OpenBB,
+merges the data into one DataFrame, cleans the data, and stores it in the database.
 '''
 
-import os
-import requests
 import pandas as pd
-from utils.db_utils import store_dataframe # Connects to the database and stores the DataFrame
-from utils.logging_utils import setup_logging, log_info, log_error # Logging utilities
-from constants import SEC_Base_URL, SEC_API_KEY # SEC API CREDENTIALS
+from openbb import obb
+from utils.db_utils import store_dataframe  # Connects to the database and stores the DataFrame
+from utils.logging_utils import setup_logging, log_info, log_error  # Logging utilities
 
-def list_kkr_filings():
+def fetch_and_store_openbb_data():
     """
-    Fetches the most recent KKR filings (10-K and 10-Q) from the SEC API.
-
-    Returns:
-        list of tuples: Each tuple contains an accession number and its corresponding filing URL.
+    Fetches KKR financial statements (balance sheet, income statement, cash flow statement)
+    from OpenBB, merges the data into one DataFrame, cleans it, and stores it in the database.
     """
-    log_info("Fetching KKR filings from SEC API")
+    ticker = "KKR"
+    log_info(f"Fetching financial statements for {ticker} from OpenBB")
     
-    # Define the query to filter for KKR filings with form types 10-K or 10-Q.
-    query = {
-        "query": {"query_string": {"query": "ticker:KKR AND (formType:\"10-K\" OR formType:\"10-Q\")"}},
-        "from": "0", 
-        "size": "10", 
-        "sort": [{"filedAt": {"order": "desc"}}]
-    }
-    response = requests.post(f"{SEC_Base_URL}/filings", json=query, headers={"Authorization": SEC_API_KEY})
-    if response.status_code != 200:
-        log_error(f"Error fetching data from SEC API: {response.status_code} - {response.text}")
-        raise Exception(f"Error fetching data from SEC API: {response.status_code} - {response.text}")
-    return [(f['accessionNo'], f['filingUrl']) for f in response.json()['filings']]
+    try:
+        # Fetch annual financial statements (you can change period="quarter" if needed)
+        balance_df = obb.equity.fundamental.balance(
+            ticker, provider="yfinance", period="annual", limit=5
+        ).to_df()
+        income_df = obb.equity.fundamental.income(
+            ticker, provider="yfinance", period="annual", limit=5
+        ).to_df()
+        cash_df = obb.equity.fundamental.cash(
+            ticker, provider="yfinance", period="annual", limit=5
+        ).to_df()
+    except Exception as e:
+        log_error(f"Error fetching data from OpenBB for {ticker}: {e}")
+        return
 
-# Extract financial data from the SEC API.
-def extract_financials(accession_no):
-    """
-    Extracts financial data from the SEC API for a given filing.
+    log_info("Fetched balance sheet, income statement, and cash flow statement.")
 
-    Args:
-        accession_no (str): The accession number of the filing.
+    try:
+        # Merge the DataFrames on their index (which should represent the reporting period/date)
+        merged_df = balance_df.merge(
+            income_df, left_index=True, right_index=True, how="outer", suffixes=("_balance", "_income")
+        )
+        merged_df = merged_df.merge(
+            cash_df, left_index=True, right_index=True, how="outer", suffixes=("", "_cash")
+        )
+    except Exception as e:
+        log_error(f"Error merging financial statements for {ticker}: {e}")
+        return
 
-    Returns:
-        dict or None: The financial data as a JSON object if successful, else None.
-    """
-    log_info(f"Extracting financial data for {accession_no}")
-    
-    # Construct the URL to extract financial data based on the accession number.
-    url = f"{SEC_Base_URL}/xbrl-to-json?accessionNo={accession_no}"
-    
-    # Make a GET request to fetch the financial data.
-    resp = requests.get(url, headers={"Authorization": SEC_API_KEY})
-    if resp.status_code != 200:
-        log_error(f"Failed to extract data for {accession_no}")
-    return resp.json() if resp.status_code == 200 else None
+    # Rename the index to "Date" (if not already named) and reset it as a column
+    if merged_df.index.name is None:
+        merged_df.index.name = "Date"
+    merged_df = merged_df.reset_index()
 
-# Fetch and store KKR financial data in the database.
-def fetch_and_store_sec_data():
-    """
-    Fetches KKR filings, extracts their financial data, merges different financial statements into one DataFrame,
-    cleans the data, and stores it using the store_dataframe utility.
-    """
-    filings = list_kkr_filings()
-    for accession_no, url in filings:
-        log_info(f"Fetching data for {accession_no}")
-        data = extract_financials(accession_no)
-        
-        if data:
-            # Convert the Income Statement, Balance Sheet, and Cash Flow Statement data into DataFrames.
-            income_df = pd.DataFrame(data['IncomeStatement'])
-            balance_df = pd.DataFrame(data['BalanceSheet'])
-            cashflow_df = pd.DataFrame(data['CashFlowStatement'])
-            
-            # Merge the three DataFrames on the 'period_ending' column.
-            merged_df = income_df.merge(balance_df, on='period_ending', how='outer') \
-                                 .merge(cashflow_df, on='period_ending', how='outer')
-            
-            # Rename the 'period_ending' column to 'Date'.
-            merged_df.rename(columns={'period_ending': 'Date'}, inplace=True)
-            
-            # Convert the 'Date' column to datetime format.
-            merged_df['Date'] = pd.to_datetime(merged_df['Date'], errors='coerce')
-            
-            # Fill missing numeric values with 0.
-            numeric_cols = merged_df.select_dtypes(include=['float64', 'int64']).columns
-            merged_df[numeric_cols] = merged_df[numeric_cols].fillna(0)
-            
-            # Store the merged DataFrame in the database.
-            store_dataframe(merged_df, "kkr_financials", if_exists="append")
-            log_info(f"Data for {accession_no} stored successfully.")
-        else:
-            log_error(f"No data found for {accession_no}")
+    # Convert the "Date" column to datetime
+    try:
+        merged_df["Date"] = pd.to_datetime(merged_df["Date"], errors="coerce")
+    except Exception as e:
+        log_error(f"Error converting Date column to datetime for {ticker}: {e}")
+
+    # Fill missing numeric values with 0
+    numeric_cols = merged_df.select_dtypes(include=["float64", "int64"]).columns
+    merged_df[numeric_cols] = merged_df[numeric_cols].fillna(0)
+
+    log_info("Merged financial statements:")
+    log_info(merged_df.head().to_string())
+
+    # Store the merged DataFrame in the database
+    try:
+        store_dataframe(merged_df, "kkr_statements", if_exists="append")
+        log_info(f"Data for {ticker} stored successfully.")
+    except Exception as e:
+        log_error(f"Error storing data for {ticker}: {e}")
 
 if __name__ == "__main__":
     setup_logging()
-    fetch_and_store_sec_data()
+    fetch_and_store_openbb_data()
