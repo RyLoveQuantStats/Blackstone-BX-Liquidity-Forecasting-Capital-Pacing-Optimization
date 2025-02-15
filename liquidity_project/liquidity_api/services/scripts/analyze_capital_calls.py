@@ -4,13 +4,23 @@ import pandas as pd
 import numpy as np
 import os
 
-FILE_PATH = "output/bx_master_data.csv"
+# Import centralized logging and DB utilities.
+from utils.logging_utils import setup_logging, log_info, log_error
+from utils.db_utils import get_connection, DB_PATH  # DB_PATH available if needed
+setup_logging()
+
+FILE_PATH = "output/master_data.csv"
 ANALYSIS_OUTPUT = "output/pe_capital_calls_analysis.csv"
 
 def load_merged_data(file_path=FILE_PATH):
-    df = pd.read_csv(file_path, parse_dates=["Date"], index_col="Date")
-    df.fillna(0, inplace=True)
-    return df
+    try:
+        df = pd.read_csv(file_path, parse_dates=["Date"], index_col="Date")
+        df.fillna(0, inplace=True)
+        log_info(f"Merged data loaded from '{file_path}'.")
+        return df
+    except Exception as e:
+        log_error(f"Error loading merged data from '{file_path}': {e}")
+        raise
 
 def inspect_nonzero_columns(df):
     columns_to_check = [
@@ -29,36 +39,37 @@ def inspect_nonzero_columns(df):
         "capital_calls",
         "distributions",
     ]
-    print("Non-zero counts for key columns:\n")
+    log_info("Non-zero counts for key columns:")
     for col in columns_to_check:
         if col in df.columns:
             non_zero_count = (df[col] != 0).sum()
-            print(f"{col}: non-zero rows = {non_zero_count} / {len(df)}")
+            log_info(f"{col}: non-zero rows = {non_zero_count} / {len(df)}")
         else:
-            print(f"{col}: NOT FOUND in df.columns")
+            log_info(f"{col}: NOT FOUND in df.columns")
 
 def analyze_capital_calls(df):
-    print("\n[INFO] Analyzing capital_calls & distributions:\n")
+    log_info("Analyzing capital_calls & distributions:")
     if "capital_calls" in df.columns:
-        print(df["capital_calls"].describe())
-        print("\nLargest capital calls:\n", df["capital_calls"].nlargest(5))
+        log_info("capital_calls summary:\n" + str(df["capital_calls"].describe()))
+        log_info("Largest capital calls:\n" + str(df["capital_calls"].nlargest(5)))
     else:
-        print("No 'capital_calls' column found.")
+        log_info("No 'capital_calls' column found.")
 
     if "distributions" in df.columns:
-        print("\nDistributions describe:\n", df["distributions"].describe())
-        print("\nLargest distributions:\n", df["distributions"].nlargest(5))
+        log_info("distributions summary:\n" + str(df["distributions"].describe()))
+        log_info("Largest distributions:\n" + str(df["distributions"].nlargest(5)))
     else:
-        print("No 'distributions' column found.")
+        log_info("No 'distributions' column found.")
 
 def main():
     os.makedirs("output", exist_ok=True)
-    df = load_merged_data(FILE_PATH)
+    log_info("Output directory created or already exists.")
 
+    df = load_merged_data(FILE_PATH)
     inspect_nonzero_columns(df)
     analyze_capital_calls(df)
 
-    # Example correlation analysis with columns that might exist
+    # Example correlation analysis with selected columns.
     corr_cols = [
         "capital_calls", "distributions",
         "netCashProvidedByOperatingActivities", "retainedEarnings",
@@ -67,11 +78,11 @@ def main():
     corr_cols = [c for c in corr_cols if c in df.columns]
     if corr_cols:
         corr_matrix = df[corr_cols].corr()
-        print("\nCorrelation matrix:\n", corr_matrix)
+        log_info("Correlation matrix computed:\n" + str(corr_matrix))
         corr_matrix.to_csv(ANALYSIS_OUTPUT)
-        print(f"\nAnalysis correlation matrix saved to {ANALYSIS_OUTPUT}")
+        log_info(f"Analysis correlation matrix saved to '{ANALYSIS_OUTPUT}'.")
     else:
-        print("\nNo columns available for correlation analysis.")
+        log_info("No columns available for correlation analysis.")
 
 if __name__ == "__main__":
     main()

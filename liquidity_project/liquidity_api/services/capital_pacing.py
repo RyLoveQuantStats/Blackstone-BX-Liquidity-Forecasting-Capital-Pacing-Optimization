@@ -2,7 +2,7 @@
 """
 capital_pacing_optimization.py
 
-This script dynamically integrates data from your Blackstone SQLite database and performs
+This script dynamically integrates data from your centralized SQL database and performs
 capital pacing optimization using a risk-adjusted return objective. It includes:
   - Dynamic data integration & forecasting from the database.
   - A Sharpe-like objective function for risk-adjusted return.
@@ -13,30 +13,29 @@ capital pacing optimization using a risk-adjusted return objective. It includes:
   - Visualization of optimal allocations.
   - JSON output for Django API integration.
 
-Ensure that the database file is available at the provided DB_PATH.
+Ensure that the centralized database file is available at the location defined in utils/db_utils.py.
 """
 
 import os
-import sqlite3
 import numpy as np
-from scipy.optimize import minimize
-import matplotlib.pyplot as plt
+import sqlite3
 import json
+import matplotlib.pyplot as plt
+from scipy.optimize import minimize
+
+# Import the centralized DB connection and logging utilities.
+from utils.db_utils import get_connection, store_dataframe, DB_PATH  # DB_PATH is defined in the utils
+from utils.logging_utils import setup_logging, log_info, log_error
 import logging
 
-# Configure logging to output to both console and a file.
-logger = logging.getLogger()
-logger.setLevel(logging.INFO)
-formatter = logging.Formatter('%(asctime)s %(levelname)s: %(message)s')
+# Set up logging (both file and console).
+setup_logging()
+# Add a console handler for immediate log output.
 console_handler = logging.StreamHandler()
+console_handler.setLevel(logging.INFO)
+formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
 console_handler.setFormatter(formatter)
-file_handler = logging.FileHandler("capital_pacing.log")
-file_handler.setFormatter(formatter)
-logger.addHandler(console_handler)
-logger.addHandler(file_handler)
-
-# Database path
-DB_PATH = r"C:\Users\ryanl\OneDrive\Desktop\Programming Apps\Python\python_work\KKR_Liquidity_Forecasting\database\blackstone_data.db"
+logging.getLogger().addHandler(console_handler)
 
 def calibrate_risk_free_rate():
     """
@@ -44,7 +43,7 @@ def calibrate_risk_free_rate():
     If the value is not found, defaults to 0.02.
     """
     try:
-        conn = sqlite3.connect(DB_PATH)
+        conn = get_connection()
         cursor = conn.cursor()
         query = '''
             SELECT "10Y Treasury Yield"
@@ -58,29 +57,30 @@ def calibrate_risk_free_rate():
         if row and row[0] is not None:
             # Assume the yield is in percentage terms and convert to decimal.
             risk_free = float(row[0]) / 100.0
-            logging.info(f"Calibrated risk-free rate from macroeconomic_data: {risk_free}")
+            log_info(f"Calibrated risk-free rate from macroeconomic_data: {risk_free}")
             return risk_free
         else:
-            logging.info("Risk-free rate not found in macroeconomic_data; defaulting to 0.02")
+            log_info("Risk-free rate not found in macroeconomic_data; defaulting to 0.02")
             return 0.02
     except Exception as e:
-        logging.error(f"Error calibrating risk-free rate: {e}")
+        log_error(f"Error calibrating risk-free rate: {e}")
         return 0.02
 
 def fetch_strategy_data():
     """
-    Fetch strategy-level data from the bx_master_data table.
+    Fetch strategy-level data from the master_data table.
     For each distinct symbol, calculate:
       - expected_return: Annualized average "Daily Return" (as a proxy for expected return)
       - volatility: Average "Volatility_30"
       - max_commit: Maximum totalInvestments (as the upper bound for commitment)
     Returns:
-      symbols (list), expected_returns (np.array), max_commit (np.array), volatility (np.array)
+      expected_returns (np.array), max_commit (np.array), volatility (np.array), symbols (list)
     """
+    # Check that the centralized DB file exists.
     if not os.path.exists(DB_PATH):
         raise FileNotFoundError(f"Database file not found at: {DB_PATH}")
     try:
-        conn = sqlite3.connect(DB_PATH)
+        conn = get_connection()
         cursor = conn.cursor()
         query = '''
             SELECT
@@ -88,14 +88,14 @@ def fetch_strategy_data():
               AVG("Daily Return") as avg_return,
               AVG("Volatility_30") as avg_volatility,
               MAX(totalInvestments) as max_commit
-            FROM bx_master_data
+            FROM master_data
             GROUP BY symbol;
         '''
         cursor.execute(query)
         rows = cursor.fetchall()
         conn.close()
         if not rows:
-            raise ValueError("No strategy data found in bx_master_data table.")
+            raise ValueError("No strategy data found in master_data table.")
         symbols = []
         expected_returns = []
         volatility = []
@@ -110,18 +110,18 @@ def fetch_strategy_data():
             vol = avg_vol if (avg_vol is not None and avg_vol > 0) else 1
             volatility.append(vol)
             max_commit.append(max_c if max_c is not None else 0)
-        logging.info(f"Fetched data for {len(symbols)} strategies.")
-        logging.info(f"Expected Returns: {expected_returns}")
-        logging.info(f"Volatility: {volatility}")
-        logging.info(f"Max Commitments: {max_commit}")
+        log_info(f"Fetched data for {len(symbols)} strategies.")
+        log_info(f"Expected Returns: {expected_returns}")
+        log_info(f"Volatility: {volatility}")
+        log_info(f"Max Commitments: {max_commit}")
         return (np.array(expected_returns), np.array(max_commit), np.array(volatility), symbols)
     except Exception as e:
-        logging.error(f"Error fetching strategy data: {e}")
+        log_error(f"Error fetching strategy data: {e}")
         raise
 
 def fetch_liquidity_data():
     """
-    Fetch liquidity data from bx_master_data.
+    Fetch liquidity data from master_data.
     We use the most recent cashAndCashEquivalents value as our available liquidity.
     Returns:
       initial_liquidity (float), buffer_percentage (float)
@@ -129,11 +129,11 @@ def fetch_liquidity_data():
     if not os.path.exists(DB_PATH):
         raise FileNotFoundError(f"Database file not found at: {DB_PATH}")
     try:
-        conn = sqlite3.connect(DB_PATH)
+        conn = get_connection()
         cursor = conn.cursor()
         query = '''
             SELECT cashAndCashEquivalents 
-            FROM bx_master_data
+            FROM master_data
             ORDER BY Date DESC
             LIMIT 1;
         '''
@@ -141,35 +141,35 @@ def fetch_liquidity_data():
         row = cursor.fetchone()
         conn.close()
         if not row or row[0] is None:
-            raise ValueError("No liquidity data found in bx_master_data table.")
+            raise ValueError("No liquidity data found in master_data table.")
         initial_liquidity = float(row[0])
         # Default liquidity buffer percentage (reserve 30% of liquidity)
         buffer_percentage = 0.30
-        logging.info(f"Initial liquidity: {initial_liquidity}, using buffer percentage: {buffer_percentage}")
+        log_info(f"Initial liquidity: {initial_liquidity}, using buffer percentage: {buffer_percentage}")
         return initial_liquidity, buffer_percentage
     except Exception as e:
-        logging.error(f"Error fetching liquidity data: {e}")
+        log_error(f"Error fetching liquidity data: {e}")
         raise
 
 def forecast_capital_calls():
     """
-    Forecast capital calls by taking the average of the capital_calls column from bx_master_data.
+    Forecast capital calls by taking the average of the capital_calls column from master_data.
     This is a placeholder; in a real model, you might use a time series or regression model.
     """
     if not os.path.exists(DB_PATH):
         raise FileNotFoundError(f"Database file not found at: {DB_PATH}")
     try:
-        conn = sqlite3.connect(DB_PATH)
+        conn = get_connection()
         cursor = conn.cursor()
-        query = 'SELECT AVG(capital_calls) FROM bx_master_data;'
+        query = 'SELECT AVG(capital_calls) FROM master_data;'
         cursor.execute(query)
         row = cursor.fetchone()
         conn.close()
         forecasted_calls = float(row[0]) if row and row[0] is not None else 10_000_000
-        logging.info(f"Forecasted capital calls: {forecasted_calls}")
+        log_info(f"Forecasted capital calls: {forecasted_calls}")
         return forecasted_calls
     except Exception as e:
-        logging.error(f"Error forecasting capital calls: {e}")
+        log_error(f"Error forecasting capital calls: {e}")
         raise
 
 def total_risk_adjusted_return(commitments, expected_returns, volatility, risk_free_rate):
@@ -232,7 +232,7 @@ def optimize_commitments():
             {"type": "ineq", "fun": lambda x: minimum_investment_constraint(x, min_total_commitment)}
         ]
         bounds = [(0, mc) for mc in max_commit]
-        logging.info("Starting optimization using dynamic Blackstone data.")
+        log_info("Starting optimization using dynamic centralized data.")
         solution = minimize(
             total_risk_adjusted_return,
             x0,
@@ -244,7 +244,7 @@ def optimize_commitments():
         if solution.success:
             optimal_commitments = solution.x
             max_return = float(-solution.fun)
-            logging.info("Optimization successful.")
+            log_info("Optimization successful.")
             result = {
                 "symbols": symbols,
                 "optimal_commitments": optimal_commitments.tolist(),
@@ -258,10 +258,10 @@ def optimize_commitments():
             return result
         else:
             error_msg = solution.message
-            logging.error(f"Optimization failed: {error_msg}")
+            log_error(f"Optimization failed: {error_msg}")
             return {"error": error_msg}
     except Exception as e:
-        logging.error(f"An error occurred during optimization: {e}")
+        log_error(f"An error occurred during optimization: {e}")
         return {"error": str(e)}
 
 def run_sensitivity_analysis(buffer_percentages):
@@ -360,9 +360,9 @@ def plot_results(opt_result):
             plt.tight_layout()
             plt.show()
         else:
-            logging.warning("No commitments or symbols available for plotting.")
+            log_info("No commitments or symbols available for plotting.")
     except Exception as e:
-        logging.error(f"Error plotting results: {e}")
+        log_error(f"Error plotting results: {e}")
 
 def run():
     """

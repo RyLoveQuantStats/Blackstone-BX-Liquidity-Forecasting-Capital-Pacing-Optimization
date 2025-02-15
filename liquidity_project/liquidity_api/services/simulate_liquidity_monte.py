@@ -2,23 +2,21 @@
 """
 simulate_liquidity_monte_carlo.py
 
-This script loads the merged KKR dataset from a SQLite database,
+This script loads the merged KKR dataset from a centralized SQLite database,
 and runs advanced Monte Carlo simulations on the 'capital_calls' time series.
 It offers several simulation methods (normal, t, bootstrap, garch, kde, block, rolling)
 and supports stress testing, parallel processing, and sensitivity analysis.
 It computes additional risk metrics (VaR, CVaR, skewness, kurtosis) and produces
 diagnostic plots. The output is provided as JSON for API/dashboard integration.
 
-Ensure that the database file is available at the provided DB_PATH.
+Ensure that the centralized database file is available at the location defined in utils/db_utils.
 """
 
 import os
-import sqlite3
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import json
-import logging
 import argparse
 from scipy import stats
 
@@ -36,21 +34,21 @@ try:
 except ImportError:
     PARALLEL_AVAILABLE = False
 
-# Configure logging to both console and file.
-logger = logging.getLogger()
-logger.setLevel(logging.INFO)
-formatter = logging.Formatter('%(asctime)s %(levelname)s: %(message)s')
-console_handler = logging.StreamHandler()
-console_handler.setFormatter(formatter)
-file_handler = logging.FileHandler("simulate_liquidity_monte_carlo.log")
-file_handler.setFormatter(formatter)
-logger.addHandler(console_handler)
-logger.addHandler(file_handler)
+# Import centralized DB and logging utilities.
+from utils.db_utils import get_connection, DB_PATH
+from utils.logging_utils import setup_logging, log_info, log_error
+import logging
 
-# Database configuration
-DB_PATH = r"C:\Users\ryanl\OneDrive\Desktop\Programming Apps\Python\python_work\KKR_Liquidity_Forecasting\database\blackstone_data.db"
-TABLE_NAME = "bx_master_data"
-logger.info(f"Final DB_PATH = {DB_PATH}")
+# Set up logging (both file and console).
+setup_logging()
+console_handler = logging.StreamHandler()
+console_handler.setLevel(logging.INFO)
+formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
+console_handler.setFormatter(formatter)
+logging.getLogger().addHandler(console_handler)
+
+TABLE_NAME = "master_data"
+log_info(f"Final DB_PATH = {DB_PATH}")
 
 def load_master_data(db_path=DB_PATH, table=TABLE_NAME):
     """
@@ -59,9 +57,9 @@ def load_master_data(db_path=DB_PATH, table=TABLE_NAME):
       - Infers frequency or forces daily frequency.
       - Drops rows with missing 'capital_calls' and removes outliers using a MAD method.
     """
-    logger.info(f"Using DB_PATH = {db_path}")
+    log_info(f"Using DB_PATH = {db_path}")
     try:
-        conn = sqlite3.connect(db_path)
+        conn = get_connection()
         df = pd.read_sql(f"SELECT * FROM {table}", conn, parse_dates=["Date"])
         conn.close()
         df.set_index("Date", inplace=True)
@@ -69,9 +67,9 @@ def load_master_data(db_path=DB_PATH, table=TABLE_NAME):
         inferred_freq = pd.infer_freq(df.index)
         if inferred_freq:
             df.index.freq = inferred_freq
-            logger.info(f"Inferred frequency: {inferred_freq}")
+            log_info(f"Inferred frequency: {inferred_freq}")
         else:
-            logger.warning("Could not infer frequency from Date index. Forcing daily frequency ('D').")
+            log_info("Could not infer frequency from Date index. Forcing daily frequency ('D').")
             df = df.asfreq('D')
         df = df[df["capital_calls"].notnull()]
         # Remove outliers using Median Absolute Deviation (MAD)
@@ -80,10 +78,10 @@ def load_master_data(db_path=DB_PATH, table=TABLE_NAME):
         threshold = 3.5
         modified_z = 0.6745 * (df["capital_calls"] - median) / (mad + 1e-6)
         df_clean = df[np.abs(modified_z) < threshold]
-        logger.info(f"Removed {len(df) - len(df_clean)} outlier rows based on MAD.")
+        log_info(f"Removed {len(df) - len(df_clean)} outlier rows based on MAD.")
         return df_clean
     except Exception as e:
-        logger.error(f"Error loading data: {e}")
+        log_error(f"Error loading data: {e}")
         raise
 
 def simulate_shocks(method, mean_change, std_change, historical_changes,
@@ -110,7 +108,6 @@ def simulate_shocks(method, mean_change, std_change, historical_changes,
         shocks = np.random.choice(historical_changes, size=(n_simulations, horizon), replace=True)
     elif method == "kde":
         kde = stats.gaussian_kde(historical_changes)
-        # kde.resample returns shape (1, n), so we transpose.
         shocks = kde.resample(n_simulations * horizon).T.reshape(n_simulations, horizon)
         shocks = shocks * stress_std + mean_change * stress_mean
     elif method == "block":
@@ -123,7 +120,6 @@ def simulate_shocks(method, mean_change, std_change, historical_changes,
             shocks[i, :] = sim_shocks[:horizon]
         shocks = shocks * stress_std + mean_change * stress_mean
     elif method == "rolling":
-        # Use the most recent rolling_window period to recalc mean and std.
         recent = historical_changes[-rolling_window:]
         r_mean = np.mean(recent)
         r_std = np.std(recent)
@@ -168,10 +164,9 @@ def run_monte_carlo_simulation(df, n_simulations=100000, horizon=30, method="nor
     historical_changes = df["calls_change"].values
     mean_change = np.mean(historical_changes)
     std_change = np.std(historical_changes)
-    logger.info(f"Mean daily change: {mean_change:.2f}, Std: {std_change:.2f}")
+    log_info(f"Mean daily change: {mean_change:.2f}, Std: {std_change:.2f}")
     last_value = df["capital_calls"].iloc[-1]
     
-    # If parallel processing is requested and available.
     if parallel and PARALLEL_AVAILABLE:
         n_jobs = -1  # use all available cores
         chunk_size = n_simulations // 10
@@ -222,7 +217,6 @@ def plot_sample_paths(outcomes, n_paths=20, horizon=30, plot_path="plots/monte_c
     plt.figure(figsize=(10, 5))
     time_axis = np.arange(1, horizon + 1)
     for i in range(n_paths):
-        # For a more realistic path, you could re-simulate cumulative shocks; here we simply use a linear interpolation.
         path = np.linspace(0, outcomes[i], horizon)
         plt.plot(time_axis, path, lw=1, alpha=0.7)
     plt.title(f"Sample Simulation Paths (n={n_paths})")
@@ -239,7 +233,6 @@ def main(args):
     if "capital_calls" not in df.columns:
         raise ValueError("❌ 'capital_calls' column not found.")
     
-    # For simulation, we use the entire series.
     # Run Monte Carlo simulation.
     outcomes, mean_change, std_change, last_value = run_monte_carlo_simulation(
         df,
@@ -253,7 +246,7 @@ def main(args):
         parallel=args.parallel
     )
     
-    # If sensitivity lists are provided, run additional simulations.
+    # Run sensitivity analysis if multiple stress factors are provided.
     stress_mean_list = [float(x) for x in args.stress_mean_list.split(",")]
     stress_std_list = [float(x) for x in args.stress_std_list.split(",")]
     
@@ -263,7 +256,7 @@ def main(args):
             for ss in stress_std_list:
                 sim_outcomes, _, _, _ = run_monte_carlo_simulation(
                     df,
-                    n_simulations=args.n_simulations // 10,  # fewer sims for sensitivity runs
+                    n_simulations=args.n_simulations // 10,
                     horizon=args.horizon,
                     method=args.method,
                     stress_mean=sm,
@@ -286,13 +279,13 @@ def main(args):
                     "kurtosis": kurtosis
                 }
     
-    # Compute simulation percentiles and risk metrics.
+    # Compute overall simulation percentiles and risk metrics.
     p5 = float(np.percentile(outcomes, 5))
     p50 = float(np.percentile(outcomes, 50))
     p95 = float(np.percentile(outcomes, 95))
     VaR, CVaR, sim_skew, sim_kurt = calculate_risk_metrics(outcomes)
-    logger.info(f"Simulation percentiles -- 5th: {p5:.2f}, Median: {p50:.2f}, 95th: {p95:.2f}")
-    logger.info(f"VaR: {VaR:.2f}, CVaR: {CVaR}, Skewness: {sim_skew:.2f}, Kurtosis: {sim_kurt:.2f}")
+    log_info(f"Simulation percentiles -- 5th: {p5:.2f}, Median: {p50:.2f}, 95th: {p95:.2f}")
+    log_info(f"VaR: {VaR:.2f}, CVaR: {CVaR}, Skewness: {sim_skew:.2f}, Kurtosis: {sim_kurt:.2f}")
     
     hist_plot_path = plot_simulation_histogram(outcomes)
     sample_paths_plot_path = plot_sample_paths(outcomes, horizon=args.horizon)
@@ -344,5 +337,4 @@ def run():
 
 if __name__ == "__main__":
     output = run()
-    # Ensure keys are JSON serializable (e.g. convert any Timestamps to strings if present)
     print(json.dumps(output, indent=4))

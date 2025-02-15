@@ -2,7 +2,7 @@
 """
 liquidity_forecasting_arima.py
 
-This script loads the merged KKR dataset from a SQLite database,
+This script loads the merged KKR dataset from a centralized SQLite database,
 performs SARIMAX forecasting on the 'capital_calls' time series (with exogenous variables),
 and outputs:
   - A summary of the fitted SARIMAX model and its parameters.
@@ -20,11 +20,10 @@ Enhancements include:
   - An ensemble forecast combining SARIMAX with an exponential smoothing model.
   - Comprehensive diagnostics and enhanced visualization.
 
-Ensure that the database file is available at the provided DB_PATH.
+Ensure that the centralized database file is available at the location defined in utils/db_utils.
 """
 
 import os
-import sqlite3
 import pandas as pd
 import numpy as np
 from statsmodels.tsa.statespace.sarimax import SARIMAX
@@ -37,21 +36,20 @@ import json
 import logging
 from scipy import stats
 
-# Configure logging (console and file)
-logger = logging.getLogger()
-logger.setLevel(logging.INFO)
-formatter = logging.Formatter('%(asctime)s %(levelname)s: %(message)s')
-console_handler = logging.StreamHandler()
-console_handler.setFormatter(formatter)
-file_handler = logging.FileHandler("liquidity_forecasting.log")
-file_handler.setFormatter(formatter)
-logger.addHandler(console_handler)
-logger.addHandler(file_handler)
+# Import centralized DB and logging utilities.
+from utils.db_utils import get_connection, DB_PATH
+from utils.logging_utils import setup_logging, log_info, log_error
 
-# Database configuration
-DB_PATH = r"C:\Users\ryanl\OneDrive\Desktop\Programming Apps\Python\python_work\KKR_Liquidity_Forecasting\database\blackstone_data.db"
-TABLE_NAME = "bx_master_data"
-logger.info(f"Final DB_PATH = {DB_PATH}")
+# Set up logging (both file and console).
+setup_logging()
+console_handler = logging.StreamHandler()
+console_handler.setLevel(logging.INFO)
+formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
+console_handler.setFormatter(formatter)
+logging.getLogger().addHandler(console_handler)
+
+TABLE_NAME = "master_data"
+log_info(f"Final DB_PATH = {DB_PATH}")
 
 def load_exogenous_data(db_path=DB_PATH):
     """
@@ -59,7 +57,7 @@ def load_exogenous_data(db_path=DB_PATH):
     Here we assume a column named "10Y Treasury Yield" exists.
     """
     try:
-        conn = sqlite3.connect(db_path)
+        conn = get_connection()
         df_exo = pd.read_sql("SELECT Date, `10Y Treasury Yield` FROM macroeconomic_data", conn, parse_dates=["Date"])
         conn.close()
         df_exo.set_index("Date", inplace=True)
@@ -67,10 +65,10 @@ def load_exogenous_data(db_path=DB_PATH):
         inferred_freq = pd.infer_freq(df_exo.index)
         if not inferred_freq:
             df_exo = df_exo.asfreq('D')
-        logger.info("Exogenous data loaded successfully.")
+        log_info("Exogenous data loaded successfully.")
         return df_exo
     except Exception as e:
-        logger.error(f"Error loading exogenous data: {e}")
+        log_error(f"Error loading exogenous data: {e}")
         return None
 
 def remove_outliers_mad(series, threshold=3.5):
@@ -90,9 +88,9 @@ def load_master_data(db_path=DB_PATH, table=TABLE_NAME):
     - Drops rows with missing 'capital_calls' and removes outliers using MAD.
     - Merges in exogenous data if available.
     """
-    logger.info(f"Using DB_PATH = {db_path}")
+    log_info(f"Using DB_PATH = {db_path}")
     try:
-        conn = sqlite3.connect(db_path)
+        conn = get_connection()
         df = pd.read_sql(f"SELECT * FROM {table}", conn, parse_dates=["Date"])
         conn.close()
         df.set_index("Date", inplace=True)
@@ -100,22 +98,22 @@ def load_master_data(db_path=DB_PATH, table=TABLE_NAME):
         inferred_freq = pd.infer_freq(df.index)
         if inferred_freq:
             df.index.freq = inferred_freq
-            logger.info(f"Inferred frequency: {inferred_freq}")
+            log_info(f"Inferred frequency: {inferred_freq}")
         else:
-            logger.warning("Could not infer frequency from Date index. Setting frequency to 'D' (daily).")
+            log_info("Could not infer frequency from Date index. Setting frequency to 'D' (daily).")
             df = df.asfreq('D')
         df = df[df["capital_calls"].notnull()]
-        # Remove outliers using MAD
+        # Remove outliers using MAD.
         df["capital_calls"] = remove_outliers_mad(df["capital_calls"])
-        logger.info(f"Outlier removal complete.")
-        # Merge exogenous data if available
+        log_info("Outlier removal complete.")
+        # Merge exogenous data if available.
         df_exo = load_exogenous_data(db_path)
         if df_exo is not None:
             df = df.merge(df_exo, left_index=True, right_index=True, how="left")
-            logger.info("Merged exogenous data.")
+            log_info("Merged exogenous data.")
         return df
     except Exception as e:
-        logger.error(f"Error loading data: {e}")
+        log_error(f"Error loading data: {e}")
         raise
 
 def select_sarimax_order(ts, exog=None,
@@ -142,16 +140,16 @@ def select_sarimax_order(ts, exog=None,
                                         enforce_stationarity=False,
                                         enforce_invertibility=False)
                         results = model.fit(disp=False)
-                        logger.info(f"Tested order ({p},{d},{q}) seasonal {seasonal_order} AIC: {results.aic}")
+                        log_info(f"Tested order ({p},{d},{q}) seasonal {seasonal_order} AIC: {results.aic}")
                         if results.aic < best_aic:
                             best_aic = results.aic
                             best_order = (p, d, q)
                             best_seasonal = seasonal_order
                     except Exception as e:
-                        logger.warning(f"Order ({p},{d},{q}) seasonal {seasonal_order} failed: {e}")
+                        log_info(f"WARNING: Order ({p},{d},{q}) seasonal {seasonal_order} failed: {e}")
     if best_order is None or best_seasonal is None:
         raise ValueError("No suitable SARIMAX model found.")
-    logger.info(f"Selected order {best_order} and seasonal_order {best_seasonal} with AIC: {best_aic}")
+    log_info(f"Selected order {best_order} and seasonal_order {best_seasonal} with AIC: {best_aic}")
     return best_order, best_seasonal
 
 def calculate_error_metrics(actual, forecast):
@@ -250,7 +248,7 @@ def main():
     # Check skewness and apply log transformation if skewed.
     skewness = train_y.skew()
     if skewness > 1:
-        logger.info(f"High skewness ({skewness}) detected; applying log transformation.")
+        log_info(f"High skewness ({skewness}) detected; applying log transformation.")
         train_y_transformed = np.log(train_y)
         test_y_transformed = np.log(test_y)
         if train_exog is not None:
@@ -300,7 +298,7 @@ def main():
     
     # Calculate error metrics on the original scale.
     mae, rmse, mape = calculate_error_metrics(test_y.values, forecast_ensemble.values)
-    logger.info(f"Ensemble forecast error metrics -- MAE: {mae}, RMSE: {rmse}, MAPE: {mape}")
+    log_info(f"Ensemble forecast error metrics -- MAE: {mae}, RMSE: {rmse}, MAPE: {mape}")
     
     # Plot forecast (ensemble forecast with confidence intervals from SARIMAX).
     forecast_plot_path = plot_forecast(train_y, test_y, forecast_ensemble, conf_int)
@@ -334,9 +332,8 @@ def run():
     return main()
 
 if __name__ == "__main__":
-    # Convert forecast index keys (Timestamps) to strings for JSON serialization.
     output = run()
-    # Here, ensure that any Timestamp keys are converted to strings.
+    # Ensure that any Timestamp keys are converted to strings for JSON serialization.
     if isinstance(output.get("forecast"), dict):
         output["forecast"] = {str(k): v for k, v in output["forecast"].items()}
     if isinstance(output.get("confidence_intervals"), dict):

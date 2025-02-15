@@ -1,0 +1,10 @@
+2025-02-15 07:40:56,602 - INFO - Logging setup completed. Logs will be stored in the 'logs' folder.
+2025-02-15 07:42:28,040 - INFO - Starting to fetch data from FRED API
+2025-02-15 07:42:28,682 - INFO - Successfully fetched data for 10Y Treasury Yield
+2025-02-15 07:42:29,004 - INFO - Successfully fetched data for 5Y Treasury Yield
+2025-02-15 07:42:29,325 - INFO - Successfully fetched data for 2Y Treasury Yield
+2025-02-15 07:42:29,651 - INFO - Successfully fetched data for 30Y Treasury Yield
+2025-02-15 07:42:29,859 - INFO - Successfully fetched data for CPI
+2025-02-15 07:42:30,183 - INFO - Successfully fetched data for BAA Corporate Bond Spread
+2025-02-15 07:42:30,520 - INFO - Successfully fetched data for High Yield Bond Index
+2025-02-15 07:42:30,560 - INFO - Macroeconomic data successfully stored in SQL database.
