@@ -1,0 +1,11 @@
+Django==5.1.6
+fredapi==0.5.2
+matplotlib==3.10.0
+numpy==2.2.3
+pandas==2.2.3
+Requests==2.32.3
+scipy==1.15.1
+seaborn==0.13.2
+SQLAlchemy==2.0.37
+statsmodels==0.14.4
+yfinance==0.2.51
