@@ -16,8 +16,8 @@ OUTPUT_CSV = "output/master_data.csv"
 def load_data_from_sql(db_path=DB_PATH):
     try:
         conn = get_connection()
-        df_stock = pd.read_sql("SELECT * FROM bx_stock_prices", conn)
-        df_financials = pd.read_sql("SELECT * FROM bx_financials", conn)
+        df_stock = pd.read_sql("SELECT * FROM stock_prices", conn)
+        df_financials = pd.read_sql("SELECT * FROM financials", conn)
         df_macro = pd.read_sql("SELECT * FROM macroeconomic_data", conn)
         conn.close()
         log_info("Data loaded successfully from SQL for stock, financials, and macroeconomic data.")
@@ -121,7 +121,7 @@ def clean_merged_data(df):
     log_info("Merged data cleaned (NaNs filled with 0).")
     return cleaned_df
 
-def store_merged_data(df, table_name="bx_master_data", db_path=DB_PATH):
+def store_merged_data(df, table_name="master_data", db_path=DB_PATH):
     try:
         conn = get_connection()
         df.to_sql(table_name, conn, if_exists="replace")
@@ -151,7 +151,7 @@ def main():
     df_merged = clean_merged_data(df_merged)
 
     # 5. Store merged data in the database and CSV file
-    store_merged_data(df_merged, table_name="bx_master_data")
+    store_merged_data(df_merged, table_name="master_data")
     df_merged.to_csv(OUTPUT_CSV)
     log_info(f"Final data saved as CSV in '{OUTPUT_CSV}'.")
 

@@ -9,21 +9,21 @@ def fetch_and_store_stock_data():
     ticker = "KKR"
 
     try:
-        bx_data = yf.download(ticker, start="2019-01-01", end="2024-01-01")
-        bx_data.columns = [col[0] for col in bx_data.columns]
+        data = yf.download(ticker, start="2019-01-01", end="2024-01-01")
+        data.columns = [col[0] for col in data.columns]
         log_info("Stock data fetched successfully")
     except Exception as e:
         log_error(f"Error fetching stock data: {e}")
         return
 
-    if "Close" in bx_data.columns:
+    if "Close" in data.columns:
         try:
-            bx_data["Daily Return"] = bx_data["Close"].pct_change()
-            bx_data["Log Return"] = np.log(bx_data["Close"] / bx_data["Close"].shift(1))
-            bx_data["SMA_50"] = bx_data["Close"].rolling(window=50).mean()
-            bx_data["SMA_200"] = bx_data["Close"].rolling(window=200).mean()
-            bx_data["EMA_50"] = bx_data["Close"].ewm(span=50, adjust=False).mean()
-            bx_data["Volatility_30"] = bx_data["Daily Return"].rolling(window=30).std()
+            data["Daily Return"] = data["Close"].pct_change()
+            data["Log Return"] = np.log(data["Close"] / data["Close"].shift(1))
+            data["SMA_50"] = data["Close"].rolling(window=50).mean()
+            data["SMA_200"] = data["Close"].rolling(window=200).mean()
+            data["EMA_50"] = data["Close"].ewm(span=50, adjust=False).mean()
+            data["Volatility_30"] = data["Daily Return"].rolling(window=30).std()
 
             def compute_rsi(series, period=14):
                 delta = series.diff()
@@ -32,18 +32,18 @@ def fetch_and_store_stock_data():
                 rs = gain / loss
                 return 100 - (100 / (1 + rs))
 
-            bx_data["RSI_14"] = compute_rsi(bx_data["Close"])
+            data["RSI_14"] = compute_rsi(data["Close"])
 
-            bx_data.fillna({
-                "SMA_50": bx_data["SMA_50"].bfill(),
-                "SMA_200": bx_data["SMA_200"].bfill(),
+            data.fillna({
+                "SMA_50": data["SMA_50"].bfill(),
+                "SMA_200": data["SMA_200"].bfill(),
                 "Volatility_30": 0,
                 "RSI_14": 50
             }, inplace=True)
 
-            bx_data.fillna(0, inplace=True)
+            data.fillna(0, inplace=True)
 
-            store_dataframe(bx_data, "stock_prices")
+            store_dataframe(data, "stock_prices")
             log_info("Stock price data stored successfully with cleaned metrics.")
         except Exception as e:
             log_error(f"Error processing stock data: {e}")

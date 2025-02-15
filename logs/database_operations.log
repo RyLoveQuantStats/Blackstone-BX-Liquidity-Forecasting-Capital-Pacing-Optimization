@@ -8,3 +8,49 @@
 2025-02-15 07:42:30,183 - INFO - Successfully fetched data for BAA Corporate Bond Spread
 2025-02-15 07:42:30,520 - INFO - Successfully fetched data for High Yield Bond Index
 2025-02-15 07:42:30,560 - INFO - Macroeconomic data successfully stored in SQL database.
+2025-02-15 07:43:36,175 - INFO - Fetching KKR filings from SEC API
+2025-02-15 07:43:36,456 - ERROR - Error fetching data from SEC API: 404 - <!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Error</title>
+</head>
+<body>
+<pre>Cannot POST /filings</pre>
+</body>
+</html>
+
+2025-02-15 07:43:49,635 - INFO - Logging setup completed. Logs will be stored in the 'logs' folder.
+2025-02-15 07:45:11,960 - INFO - Fetching KKR filings from SEC API
+2025-02-15 07:45:12,239 - ERROR - Error fetching data from SEC API: 404 - <!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Error</title>
+</head>
+<body>
+<pre>Cannot POST /filings</pre>
+</body>
+</html>
+
+2025-02-15 07:45:39,815 - INFO - Starting to fetch data from FRED API
+2025-02-15 07:45:40,255 - INFO - Successfully fetched data for 10Y Treasury Yield
+2025-02-15 07:45:40,660 - INFO - Successfully fetched data for 5Y Treasury Yield
+2025-02-15 07:45:40,983 - INFO - Successfully fetched data for 2Y Treasury Yield
+2025-02-15 07:45:41,322 - INFO - Successfully fetched data for 30Y Treasury Yield
+2025-02-15 07:45:41,526 - INFO - Successfully fetched data for CPI
+2025-02-15 07:45:41,852 - INFO - Successfully fetched data for BAA Corporate Bond Spread
+2025-02-15 07:45:42,169 - INFO - Successfully fetched data for High Yield Bond Index
+2025-02-15 07:45:42,216 - INFO - Macroeconomic data successfully stored in SQL database.
+2025-02-15 07:46:28,680 - INFO - Starting stock data fetch for KKR
+2025-02-15 07:46:28,711 - INFO - Stock data fetched successfully
+2025-02-15 07:46:28,766 - INFO - Stock price data stored successfully with cleaned metrics.
+2025-02-15 07:54:21,051 - ERROR - Error fetching strategy data: no such table: bx_master_data
+2025-02-15 07:54:21,052 - ERROR - An error occurred during optimization: no such table: bx_master_data
+2025-02-15 07:54:21,053 - ERROR - Error fetching strategy data: no such table: bx_master_data
+2025-02-15 07:54:21,054 - ERROR - Error fetching strategy data: no such table: bx_master_data
+2025-02-15 07:54:21,054 - ERROR - Error fetching strategy data: no such table: bx_master_data
+2025-02-15 07:54:21,055 - ERROR - Error fetching strategy data: no such table: bx_master_data
+2025-02-15 07:54:21,055 - ERROR - Error fetching strategy data: no such table: bx_master_data
+2025-02-15 07:54:21,056 - ERROR - Error fetching strategy data: no such table: bx_master_data
+2025-02-15 07:54:21,056 - INFO - No commitments or symbols available for plotting.

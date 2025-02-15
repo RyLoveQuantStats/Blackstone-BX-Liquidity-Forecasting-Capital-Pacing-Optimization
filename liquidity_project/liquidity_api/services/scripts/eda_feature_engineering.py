@@ -2,7 +2,7 @@
 """
 eda_and_feature_engineering.py
 
-Loads the merged 'master' dataset (bx_master_data) from the database or CSV,
+Loads the merged 'master' dataset (master_data) from the database or CSV,
 performs basic Exploratory Data Analysis (EDA), and demonstrates 
 feature engineering steps.
 """
@@ -19,7 +19,7 @@ from utils.logging_utils import setup_logging, log_info, log_error
 # Set up logging.
 setup_logging()
 
-MASTER_TABLE = "bx_master_data"
+MASTER_TABLE = "master_data"
 
 def load_master_data_from_sql(db_path=DB_PATH, table=MASTER_TABLE):
     try:
@@ -49,10 +49,10 @@ def eda_plots(df):
     A few EDA plots: time-series chart, histogram, correlation heatmap.
     Adjust columns as appropriate for your data.
     """
-    # 1. Simple time-series plot of BX closing price.
+    # 1. Simple time-series plot of closing price.
     if "Close" in df.columns:
         plt.figure(figsize=(12,6))
-        df["Close"].plot(title="BX Close Price Over Time")
+        df["Close"].plot(title="Close Price Over Time")
         plt.show()
 
     # 2. Distribution of daily returns (if present).
@@ -118,14 +118,14 @@ def main():
     # 4. Store the updated DataFrame back to the database and to CSV.
     try:
         conn = get_connection()
-        df.to_sql("bx_master_features", conn, if_exists="replace")
+        df.to_sql("master_features", conn, if_exists="replace")
         conn.close()
-        log_info("Feature-engineered data stored in DB table 'bx_master_features'.")
+        log_info("Feature-engineered data stored in DB table 'master_features'.")
     except Exception as e:
         log_error(f"Error storing feature-engineered data to DB: {e}")
 
     os.makedirs("output", exist_ok=True)
-    output_csv = "output/bx_master_features.csv"
+    output_csv = "output/master_features.csv"
     df.to_csv(output_csv)
     log_info(f"Feature-engineered data saved to CSV at '{output_csv}'.")
 
