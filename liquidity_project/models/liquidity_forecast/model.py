@@ -139,8 +139,7 @@ def plot_forecast(train, test, forecast, conf_int):
                          color="gray", alpha=0.3, label="CI")
     plt.title("Capital Calls Forecast")
     plt.legend()
-    os.makedirs("plots", exist_ok=True)
-    save_path = "plots/capital_calls_forecast.png"
+    save_path = "output/plots/capital_calls_forecast.png"
     plt.savefig(save_path)
     plt.close()
     return save_path
@@ -167,7 +166,7 @@ def plot_residuals(resid):
     plt.title("PACF")
 
     plt.tight_layout()
-    save_path = "plots/residuals.png"
+    save_path = "output/plots/residuals.png"
     plt.savefig(save_path)
     plt.close()
 

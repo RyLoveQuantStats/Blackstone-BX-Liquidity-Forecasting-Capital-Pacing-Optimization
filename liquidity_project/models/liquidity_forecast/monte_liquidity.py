@@ -192,7 +192,7 @@ def calculate_risk_metrics(outcomes, percentile=5):
     kurtosis = float(stats.kurtosis(outcomes))
     return VaR, CVaR, skewness, kurtosis
 
-def plot_simulation_histogram(outcomes, plot_path="plots/monte_carlo_histogram.png"):
+def plot_simulation_histogram(outcomes, plot_path="output/plots/monte_carlo_histogram.png"):
     """
     Plot a histogram of simulated outcomes.
     """
@@ -206,7 +206,7 @@ def plot_simulation_histogram(outcomes, plot_path="plots/monte_carlo_histogram.p
     plt.close()
     return plot_path
 
-def plot_sample_paths(outcomes, n_paths=20, horizon=30, plot_path="plots/monte_carlo_sample_paths.png"):
+def plot_sample_paths(outcomes, n_paths=20, horizon=30, plot_path="output/plots/monte_carlo_sample_paths.png"):
     """
     Plot a few sample simulation paths over the forecast horizon.
     Here we approximate a cumulative path by interpolating between the average outcome and the simulated final outcome.
@@ -225,7 +225,6 @@ def plot_sample_paths(outcomes, n_paths=20, horizon=30, plot_path="plots/monte_c
     return plot_path
 
 def main(args):
-    os.makedirs("plots", exist_ok=True)
     df = load_master_data()
     if "capital_call_proxy" not in df.columns:
         raise ValueError("❌ 'capital_calls' column not found.")
