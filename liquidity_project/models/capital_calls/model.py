@@ -1,211 +1,102 @@
-"""
-Enhanced Capital Calls & Distributions Update Script with Diagnostics
------------------------------------------------------------------------
-This script updates your master_data CSV from the database, calculates enhanced capital calls
-and distributions, and exports the results. It now includes diagnostic logging and plotting to
-QC the input data and intermediate calculations.
-"""
-
-import os
 import pandas as pd
-import numpy as np
-import matplotlib.pyplot as plt
-import logging
-
+import os
 from utils.logging_utils import setup_logging, log_info, log_error
 from utils.db_utils import get_connection, DB_PATH
 
 # Set up logging.
 setup_logging()
 
-# Save Locations
-MASTER_DATA_CSV = "output/csv/master_data.csv"
-OUTPUT_ANALYSIS_CSV = "output/csv/master_data_with_capital_calls.csv"
-TABLE_NAME = "master_data"
-
-# Flag to enable or disable outlier removal.
-REMOVE_OUTLIERS = False  # Set to False if outlier removal is making data constant.
-
-# --------------------------------------------------------------------------
-# 1. Data Loading Functions
-# --------------------------------------------------------------------------
-
-def load_master_data_from_db(db_path=DB_PATH, table=TABLE_NAME):
+def load_master_data():
+    """
+    Loads the master_data table from the database.
+    Expects that the table was saved with the date as the index, with index label 'Date'.
+    """
     try:
         conn = get_connection()
-        df = pd.read_sql(f"SELECT * FROM {table}", conn, parse_dates=["Date"])
+        # Read the table; the date column should be in a column called 'Date'
+        df = pd.read_sql("SELECT * FROM master_data", conn, parse_dates=["Date"])
         conn.close()
-        df.set_index("Date", inplace=True)
-        df.sort_index(inplace=True)
-        log_info(f"Loaded {df.shape[0]} rows from the database.")
+        # Ensure 'Date' is set as the index
+        if "Date" in df.columns:
+            df.set_index("Date", inplace=True)
+        log_info(f"Master data loaded with shape: {df.shape}")
         return df
     except Exception as e:
-        log_error(f"Error loading data from DB: {e}")
+        log_error(f"Error loading master data: {e}")
         raise
 
-def update_master_data_csv(csv_path=MASTER_DATA_CSV, db_path=DB_PATH, table=TABLE_NAME):
-    if os.path.exists(csv_path):
-        log_info(f"CSV '{csv_path}' exists. Loading existing data.")
-        existing_df = pd.read_csv(csv_path, parse_dates=["Date"], index_col="Date")
-        last_date = existing_df.index.max()
-        log_info(f"Last date in CSV: {last_date}")
-        try:
-            conn = get_connection()
-            query = f"SELECT * FROM {table} WHERE Date > '{last_date}'"
-            new_df = pd.read_sql(query, conn, parse_dates=["Date"])
-            conn.close()
-            if not new_df.empty:
-                new_df.set_index("Date", inplace=True)
-                log_info(f"Found {new_df.shape[0]} new rows.")
-                updated_df = pd.concat([existing_df, new_df]).drop_duplicates().sort_index()
-            else:
-                log_info("No new rows found.")
-                updated_df = existing_df
-        except Exception as e:
-            log_error(f"Error updating CSV from DB: {e}")
-            updated_df = existing_df
-    else:
-        log_info(f"CSV '{csv_path}' not found. Loading full data from DB.")
-        updated_df = load_master_data_from_db(db_path, table)
+def compute_capital_calls_and_distributions(df):
+    """
+    Computes both capital calls and distributions.
     
-    os.makedirs(os.path.dirname(csv_path), exist_ok=True)
-    updated_df.to_csv(csv_path)
-    log_info(f"Updated master data saved to '{csv_path}'.")
-    return updated_df
-
-# --------------------------------------------------------------------------
-# 2. Data QC Functions
-# --------------------------------------------------------------------------
-
-def qc_print_stats(df, cols):
-    """Print summary statistics for key columns."""
-    for col in cols:
-        if col in df.columns:
-            log_info(f"Stats for {col}:\n{df[col].describe()}")
-        else:
-            log_info(f"Column {col} not found in data.")
-
-def plot_time_series(df, col, output_dir="output/qc_plots"):
-    """Plot time series for a given column."""
-    os.makedirs(output_dir, exist_ok=True)
-    if col in df.columns:
-        plt.figure(figsize=(10,4))
-        plt.plot(df.index, df[col])
-        plt.title(f"Time Series of {col}")
-        save_path = os.path.join(output_dir, f"{col}_timeseries.png")
-        plt.savefig(save_path)
-        plt.close()
-        log_info(f"Saved time series plot for {col} to {save_path}")
-
-# --------------------------------------------------------------------------
-# 3. New Capital Call Calculation Logic
-# --------------------------------------------------------------------------
-
-def calculate_capital_calls_new(df):
+    Capital Calls:
+      - net_investment = purchase_of_investment - sale_of_investment
+      - capital_call = max(0, net_investment - cash_and_cash_equivalents)
+    
+    Distributions:
+      - distribution = max(0, operating_cash_flow)
+    
+    Rolling averages (30-day) are computed for smoothing.
     """
-    New logic for capital call estimation:
-      - Investment Needs: Absolute value of negative investing cash flow.
-      - Debt Repayment: When net debt decreases (delta < 0).
-      - Available Funds: Operating cash flow + Cash and cash equivalents.
-      - Capital Calls: max(0, Investment Needs + Debt Repayment - Available Funds)
-    """
-    # Ensure necessary columns are present and numeric.
-    required_cols = ['fin_investing_cash_flow', 'fin_operating_cash_flow', 
-                     'fin_cash_and_cash_equivalents', 'fin_net_debt']
+    df = df.copy()
+    
+    # Ensure required columns are available and fill missing values with 0.
+    required_cols = ["purchase_of_investment", "sale_of_investment", "cash_and_cash_equivalents", "operating_cash_flow"]
     for col in required_cols:
-        if col not in df.columns:
-            log_info(f"Column '{col}' missing; setting to 0.")
-            df[col] = 0
+        if col in df.columns:
+            df[col] = df[col].fillna(0)
         else:
-            df[col] = pd.to_numeric(df[col], errors='coerce').fillna(0)
+            log_info(f"Column '{col}' not found in master_data; filling with 0.")
+            df[col] = 0
+
+    # Calculate net investment.
+    df["net_investment"] = df["purchase_of_investment"] - df["sale_of_investment"]
     
-    # Calculate investment needs: Only consider negative cash flows (outflows).
-    df['investment_needs'] = df['fin_investing_cash_flow'].apply(lambda x: abs(x) if x < 0 else 0)
+    # Compute capital call: the shortfall between net investment and available cash.
+    df["capital_call"] = (df["net_investment"] - df["cash_and_cash_equivalents"]).clip(lower=0)
     
-    # Calculate debt repayment: If net debt decreases (delta negative), treat that as repayment.
-    df['delta_net_debt'] = df['fin_net_debt'].diff().fillna(0)
-    df['debt_repayment'] = df['delta_net_debt'].apply(lambda x: abs(x) if x < 0 else 0)
+    # Compute distributions: assume only positive operating cash flow counts.
+    df["distribution"] = df["operating_cash_flow"].clip(lower=0)
     
-    # Available funds from operations and current cash.
-    df['available_funds'] = df['fin_operating_cash_flow'] + df['fin_cash_and_cash_equivalents']
+    # Compute 30-day rolling averages for smoothing.
+    df["capital_call_rolling"] = df["capital_call"].rolling(window=30, min_periods=1).mean()
+    df["distribution_rolling"] = df["distribution"].rolling(window=30, min_periods=1).mean()
     
-    # Calculate capital call shortfall.
-    df['capital_call_shortfall'] = df['investment_needs'] + df['debt_repayment'] - df['available_funds']
-    df['capital_calls_new'] = df['capital_call_shortfall'].apply(lambda x: x if x > 0 else 0)
-    
-    log_info("New capital call calculation complete. Descriptive stats:\n" +
-             str(df['capital_calls_new'].describe()))
+    log_info("Capital calls and distributions computed.")
     return df
 
-# --------------------------------------------------------------------------
-# 4. Existing Distributions Calculation (unchanged)
-# --------------------------------------------------------------------------
-
-def calculate_distributions_enhanced(df, window=7, growth_weight=0.5):
-    for col in ['fin_operating_cash_flow', 'fin_retained_earnings']:
-        if col not in df.columns:
-            log_info(f"Column '{col}' missing; setting to 0.")
-            df[col] = 0
-        else:
-            df[col] = pd.to_numeric(df[col], errors='coerce').fillna(0)
-    df["fin_base_distributions"] = df["fin_operating_cash_flow"] + df["fin_retained_earnings"]
-    df["fin_ocf_growth"] = df["fin_operating_cash_flow"].pct_change(periods=window).fillna(0)
-    if "macro_10Y Treasury Yield" in df.columns:
-        dist_factor = 1 + df["macro_10Y Treasury Yield"].mean()/100
-    else:
-        dist_factor = 1.0
-    overall_adj = (1 + growth_weight * df["fin_ocf_growth"]) * dist_factor
-    df["distributions"] = df["fin_base_distributions"] * overall_adj
-    log_info("Enhanced distributions computed. Descriptive stats:\n" +
-             str(df["distributions"].describe()))
-    return df
-
-# --------------------------------------------------------------------------
-# 5. Storage & Export
-# --------------------------------------------------------------------------
-
-def store_master_data(df, db_path=DB_PATH, table=TABLE_NAME):
+def store_master_data(df):
+    """
+    Stores the updated DataFrame back into the master_data SQL table.
+    Uses index_label='Date' to preserve the date index.
+    """
     try:
         conn = get_connection()
-        df.to_sql(table, conn, if_exists="replace", index=True)
+        df.to_sql("master_data", conn, if_exists="replace", index=True, index_label="Date")
         conn.close()
-        log_info("Updated master data stored in the database.")
+        log_info("Master data table updated successfully in the database.")
     except Exception as e:
         log_error(f"Error storing master data: {e}")
         raise
 
-# --------------------------------------------------------------------------
-# 6. Main Routine
-# --------------------------------------------------------------------------
-
 def main():
-    os.makedirs("output", exist_ok=True)
-    # Update or load CSV data.
-    df_master = update_master_data_csv(csv_path=MASTER_DATA_CSV, db_path=DB_PATH, table=TABLE_NAME)
+    # Load master data.
+    df_master = load_master_data()
     
-    # QC: Print summary stats and plot key columns to verify variability.
-    key_cols = ['fin_investing_cash_flow', 'fin_operating_cash_flow', 'fin_cash_and_cash_equivalents', 
-                'fin_net_debt', 'macro_inflation_rate', 'stock_Volatility_30']
-    qc_print_stats(df_master, key_cols)
-    for col in key_cols:
-        plot_time_series(df_master, col, output_dir="output/qc_plots")
+    # Compute capital calls and distributions.
+    df_updated = compute_capital_calls_and_distributions(df_master)
     
-    # New Capital Call Calculation using the updated logic.
-    df_master = calculate_capital_calls_new(df_master)
+    # Store the updated DataFrame back into the SQL master_data table.
+    store_master_data(df_updated)
     
-    # Enhanced distributions calculation.
-    df_master = calculate_distributions_enhanced(df_master, window=7, growth_weight=0.5)
+    # Also save to a CSV file.
+    output_file = "output/csv/capital_calls_master.csv"
+    df_updated.to_csv(output_file)
+    log_info(f"Master data with capital calls and distributions saved to {output_file}")
     
-    # Store updated data.
-    store_master_data(df_master, db_path=DB_PATH, table=TABLE_NAME)
-    df_master.to_csv(OUTPUT_ANALYSIS_CSV)
-    log_info(f"Enhanced master data exported to '{OUTPUT_ANALYSIS_CSV}'.")
-    
-    return df_master
-
-def run():
-    return main()
+    return df_updated
 
 if __name__ == "__main__":
-    updated_df = run()
-    print(updated_df.head())
+    df_calls = main()
+    # Display the last 10 days of computed metrics.
+    print(df_calls[["capital_call", "capital_call_rolling", "distribution", "distribution_rolling"]].tail(10))

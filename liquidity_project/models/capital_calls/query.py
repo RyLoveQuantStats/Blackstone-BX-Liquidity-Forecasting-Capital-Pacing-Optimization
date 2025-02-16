@@ -7,7 +7,7 @@ conn = sqlite3.connect('database/data.db')
 cursor = conn.cursor()
 
 # Query to get column names from the bx_master_data table
-cursor.execute("PRAGMA table_info(master_data);")
+cursor.execute("PRAGMA table_info(kkr_statements);")
 
 # Fetch and display the results
 columns = cursor.fetchall()
