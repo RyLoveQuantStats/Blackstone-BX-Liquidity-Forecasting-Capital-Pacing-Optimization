@@ -11,8 +11,8 @@ from statsmodels.tsa.statespace.sarimax import SARIMAX
 from statsmodels.tsa.holtwinters import SimpleExpSmoothing
 from scipy.optimize import minimize
 
-from utils.db_utils import get_connection, store_dataframe, DB_PATH
-from utils.logging_utils import setup_logging, log_info, log_error
+from capital_calls_api.utils.db_utils import get_connection, store_dataframe, DB_PATH
+from capital_calls_api.utils.logging_utils import setup_logging, log_info, log_error
 
 # Set up logging (both file and console)
 setup_logging()

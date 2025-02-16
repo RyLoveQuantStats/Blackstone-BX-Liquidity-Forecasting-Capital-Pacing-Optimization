@@ -3,7 +3,7 @@ import argparse
 import json
 
 # Import your forecasting & simulation functions
-from liquidity_project.models.calls_SARIMAX_Monte.model import run_forecasting, run_simulation
+from liquidity_project.models.calls_SARIMAX_Monte.model2 import run_forecasting, run_simulation
 
 def parse_args():
     """
