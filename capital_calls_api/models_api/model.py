@@ -11,8 +11,8 @@ from statsmodels.tsa.statespace.sarimax import SARIMAX
 from statsmodels.tsa.holtwinters import SimpleExpSmoothing
 from scipy.optimize import minimize
 
-from capital_calls_api.utils.db_utils import get_connection, store_dataframe, DB_PATH
-from capital_calls_api.utils.logging_utils import setup_logging, log_info, log_error
+from utils.db_utils import get_connection, store_dataframe, DB_PATH
+from utils.logging_utils import setup_logging, log_info, log_error
 
 # Set up logging (both file and console)
 setup_logging()
@@ -94,7 +94,7 @@ def load_synthetic_data():
         df = pd.read_sql("SELECT * FROM synthetic_master_data", conn)
         conn.close()
         if "Date" in df.columns:
-            df["Date"] = pd.to_datetime(df["Date"])
+            df["Date"] = pd.to_datetime(df["Date"], errors='coerce')
             df.set_index("Date", inplace=True)
         else:
             # Assume the index was stored already as the date
@@ -273,11 +273,8 @@ if __name__ == "__main__":
     forecast_results = main()
 
 
-# ---------------------------
-# Model2: Monte Carlo Simulation
-# ---------------------------
+####### Model 2: Forecasting and Simulation #######
 
-#!/usr/bin/env python
 import os
 import pandas as pd
 import numpy as np
@@ -299,9 +296,6 @@ from scipy import stats
 # Ignore specific warnings
 warnings.filterwarnings("ignore", category=UserWarning)
 
-# Import DB and logging utilities from your utils folder
-from capital_calls_api.utils.db_utils import get_connection, DB_PATH, store_dataframe
-from capital_calls_api.utils.logging_utils import setup_logging, log_info, log_error
 
 # Set up logging (file + console)
 setup_logging()
@@ -462,9 +456,9 @@ def run_forecasting():
     4. Fit SARIMAX & Exponential Smoothing
     5. Average forecasts -> ensemble
     6. Compute error metrics & produce plots
-    7. Return an output dictionary
+    7. Return an output dictionary (with Timestamps converted to strings)
     """
-    df = load_master_data()
+    df = load_synthetic_data()
     if df is None or "capital_call_proxy" not in df.columns:
         return {"error": "capital_call_proxy column not found or data load failed."}
 
@@ -519,21 +513,27 @@ def run_forecasting():
     mae, rmse, mape = calculate_errors(test.values, forecast_ensemble.values)
     log_info(f"Forecast Errors: MAE={mae}, RMSE={rmse}, MAPE={mape}")
 
-    # Plot
+    # Plot forecast and residuals
     forecast_plot = plot_forecast_forecasting(train, test, forecast_ensemble, conf_int)
     residuals_plot, lb_pvalue = plot_residuals_forecasting(results.resid.dropna())
+
+    # Convert pandas Timestamp keys to strings in the forecast and confidence intervals:
+    forecast_dict = {str(k): v for k, v in forecast_ensemble.to_dict().items()}
+    conf_int_dict = {}
+    # conf_int.to_dict() returns a dict with keys as column names; then inside, keys are Timestamps.
+    for col, data in conf_int.to_dict().items():
+        conf_int_dict[col] = {str(idx): val for idx, val in data.items()}
 
     output = {
         "model_summary": results.summary().as_text(),
         "error_metrics": {"MAE": mae, "RMSE": rmse, "MAPE": mape},
-        "forecast": forecast_ensemble.to_dict(),       # keys = Timestamps
-        "confidence_intervals": conf_int.to_dict(),    # keys = Timestamps
+        "forecast": forecast_dict,
+        "confidence_intervals": conf_int_dict,
         "forecast_plot": forecast_plot,
         "residuals_plot": residuals_plot,
         "ljung_box_pvalue": lb_pvalue,
         "model_order": {"order": order, "seasonal_order": seasonal_order},
         "transformation": "diff once if non-stationary",
-        # Enhancement: metadata about date range
         "data_range": {
             "train_start": str(train.index[0]),
             "train_end": str(train.index[-1]),

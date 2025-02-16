@@ -76,11 +76,12 @@ WSGI_APPLICATION = "capital_calls_api.wsgi.application"
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
 DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',  # This specifies SQLite as the DB engine
+        'NAME': BASE_DIR / 'db.sqlite3',           # This is the path to your database file
     }
 }
+
 
 
 # Password validation

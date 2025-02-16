@@ -1,7 +1,7 @@
 import sqlite3
 import pandas as pd
 
-DB_PATH = "database/data.db"
+DB_PATH = r"C:\Users\ryanl\OneDrive\Desktop\Programming Apps\Python\python_work\CAPACE\database\data.db"
 
 def get_connection():
     return sqlite3.connect(DB_PATH)
