@@ -96,6 +96,27 @@ def prepare_and_reindex(df, use_cols, global_start, global_end, freq="D"):
 
     return df
 
+import sqlite3
+
+DB_PATH = "database.db"
+
+def rename_and_drop_columns():
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+
+    # 1. Drop the old "Date" column.
+    cursor.execute("ALTER TABLE kkr_statements DROP COLUMN Date")
+
+    # 2. Rename "period_ending_x" to "Date".
+    cursor.execute("ALTER TABLE kkr_statements RENAME COLUMN period_ending_x TO Date")
+
+    conn.commit()
+    conn.close()
+    print("Successfully dropped old 'Date' column and renamed 'period_ending_x' to 'Date'.")
+
+if __name__ == "__main__":
+    rename_and_drop_columns()
+    
 def main():
     os.makedirs("output", exist_ok=True)
     log_info("Starting data merge with daily reindex approach...")

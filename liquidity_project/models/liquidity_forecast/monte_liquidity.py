@@ -44,7 +44,7 @@ formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
 console_handler.setFormatter(formatter)
 logging.getLogger().addHandler(console_handler)
 
-TABLE_NAME = "master_data"
+TABLE_NAME = "synthetic_master_data"
 log_info(f"Final DB_PATH = {DB_PATH}")
 
 def load_master_data(db_path=DB_PATH, table=TABLE_NAME):
@@ -68,12 +68,12 @@ def load_master_data(db_path=DB_PATH, table=TABLE_NAME):
         else:
             log_info("Could not infer frequency from Date index. Forcing daily frequency ('D').")
             df = df.asfreq('D')
-        df = df[df["capital_calls"].notnull()]
+        df = df[df["capital_call_proxy"].notnull()]
         # Remove outliers using Median Absolute Deviation (MAD)
-        median = df["capital_calls"].median()
-        mad = np.median(np.abs(df["capital_calls"] - median))
+        median = df["capital_call_proxy"].median()
+        mad = np.median(np.abs(df["capital_call_proxy"] - median))
         threshold = 3.5
-        modified_z = 0.6745 * (df["capital_calls"] - median) / (mad + 1e-6)
+        modified_z = 0.6745 * (df["capital_call_proxy"] - median) / (mad + 1e-6)
         df_clean = df[np.abs(modified_z) < threshold]
         log_info(f"Removed {len(df) - len(df_clean)} outlier rows based on MAD.")
         return df_clean
@@ -157,12 +157,12 @@ def run_monte_carlo_simulation(df, n_simulations=100000, horizon=30, method="nor
     Returns:
       simulated_outcomes, mean_change, std_change, last_value.
     """
-    df["calls_change"] = df["capital_calls"].diff().fillna(0)
+    df["calls_change"] = df["capital_call_proxy"].diff().fillna(0)
     historical_changes = df["calls_change"].values
     mean_change = np.mean(historical_changes)
     std_change = np.std(historical_changes)
     log_info(f"Mean daily change: {mean_change:.2f}, Std: {std_change:.2f}")
-    last_value = df["capital_calls"].iloc[-1]
+    last_value = df["capital_call_proxy"].iloc[-1]
     
     if parallel and PARALLEL_AVAILABLE:
         n_jobs = -1  # use all available cores
@@ -227,7 +227,7 @@ def plot_sample_paths(outcomes, n_paths=20, horizon=30, plot_path="plots/monte_c
 def main(args):
     os.makedirs("plots", exist_ok=True)
     df = load_master_data()
-    if "capital_calls" not in df.columns:
+    if "capital_call_proxy" not in df.columns:
         raise ValueError("❌ 'capital_calls' column not found.")
     
     # Run Monte Carlo simulation.

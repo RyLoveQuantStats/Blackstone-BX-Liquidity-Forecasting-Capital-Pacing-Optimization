@@ -1,7 +1,7 @@
 """
 Simple Liquidity Forecasting Script
 -----------------------------------
-1. Loads master_data (capital_calls) from SQLite.
+1. Loads master_data (capital_call_proxy) from SQLite.
 2. Loads exogenous data (10Y Treasury Yield) if present.
 3. Optionally differencing if the series is non-stationary.
 4. Fits a fixed-order SARIMAX and an Exponential Smoothing model.
@@ -38,7 +38,7 @@ formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
 console_handler.setFormatter(formatter)
 logging.getLogger().addHandler(console_handler)
 
-TABLE_NAME = "master_data"
+TABLE_NAME = "synthetic_master_data"
 log_info(f"Final DB_PATH = {DB_PATH}")
 
 # --------------------------------------------------------------------------
@@ -70,7 +70,7 @@ def load_exogenous_data(db_path=DB_PATH):
 
 def load_master_data(db_path=DB_PATH, table=TABLE_NAME):
     """
-    Loads the main data (capital_calls) from the given table:
+    Loads the main data (capital_call_proxy) from the given table:
       - Sets Date as the index
       - Infers frequency or sets daily
       - Merges exogenous data if available
@@ -85,7 +85,7 @@ def load_master_data(db_path=DB_PATH, table=TABLE_NAME):
         if not freq:
             df = df.asfreq("D")
             log_info("No frequency inferred; defaulting to daily.")
-        if "capital_calls" not in df.columns:
+        if "capital_call_proxy" not in df.columns:
             return None
 
         # Merge exogenous data if available
@@ -181,14 +181,14 @@ def plot_residuals(resid):
 
 def main():
     df = load_master_data()
-    if df is None or "capital_calls" not in df.columns:
-        return {"error": "capital_calls column not found or data load failed."}
+    if df is None or "capital_call_proxy" not in df.columns:
+        return {"error": "capital_call_proxy column not found or data load failed."}
 
     # Keep only rows with non-null capital_calls
-    df = df[df["capital_calls"].notnull()]
+    df = df[df["capital_call_proxy"].notnull()]
 
     # If the series is constant or too small, return a trivial forecast
-    series = df["capital_calls"]
+    series = df["capital_call_proxy"]
     if series.nunique() <= 1:
         log_error("capital_calls is constant. Returning trivial forecast.")
         return {
