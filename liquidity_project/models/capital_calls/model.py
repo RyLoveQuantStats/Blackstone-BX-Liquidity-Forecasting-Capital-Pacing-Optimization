@@ -18,8 +18,9 @@ from utils.db_utils import get_connection, DB_PATH
 # Set up logging.
 setup_logging()
 
-MASTER_DATA_CSV = "output/master_data.csv"
-OUTPUT_ANALYSIS_CSV = "output/master_data_with_capital_calls.csv"
+# Save Locations
+MASTER_DATA_CSV = "output/csv/master_data.csv"
+OUTPUT_ANALYSIS_CSV = "output/csv/master_data_with_capital_calls.csv"
 TABLE_NAME = "master_data"
 
 # Flag to enable or disable outlier removal.
@@ -82,7 +83,7 @@ def qc_print_stats(df, cols):
         if col in df.columns:
             log_info(f"Stats for {col}:\n{df[col].describe()}")
         else:
-            log_info(f"Column {col} not found.")
+            log_info(f"Column {col} not found in data.")
 
 def plot_time_series(df, col, output_dir="output/qc_plots"):
     """Plot time series for a given column."""
@@ -97,50 +98,48 @@ def plot_time_series(df, col, output_dir="output/qc_plots"):
         log_info(f"Saved time series plot for {col} to {save_path}")
 
 # --------------------------------------------------------------------------
-# 3. Base Calculation
+# 3. New Capital Call Calculation Logic
 # --------------------------------------------------------------------------
 
-def calculate_base_calls(df):
-    req_cols = ['fin_capital_expenditure', 'fin_net_debt', 'fin_current_assets', 'fin_current_liabilities']
-    for col in req_cols:
+def calculate_capital_calls_new(df):
+    """
+    New logic for capital call estimation:
+      - Investment Needs: Absolute value of negative investing cash flow.
+      - Debt Repayment: When net debt decreases (delta < 0).
+      - Available Funds: Operating cash flow + Cash and cash equivalents.
+      - Capital Calls: max(0, Investment Needs + Debt Repayment - Available Funds)
+    """
+    # Ensure necessary columns are present and numeric.
+    required_cols = ['fin_investing_cash_flow', 'fin_operating_cash_flow', 
+                     'fin_cash_and_cash_equivalents', 'fin_net_debt']
+    for col in required_cols:
         if col not in df.columns:
             log_info(f"Column '{col}' missing; setting to 0.")
             df[col] = 0
         else:
             df[col] = pd.to_numeric(df[col], errors='coerce').fillna(0)
-    df["fin_working_capital"] = df["fin_current_assets"] - df["fin_current_liabilities"]
-    df["fin_delta_working_capital"] = df["fin_working_capital"].diff().clip(lower=0)
-    df["fin_delta_net_debt"] = df["fin_net_debt"].diff().clip(lower=0)
-    df["fin_base_calls"] = df["fin_capital_expenditure"] + df["fin_delta_working_capital"] + df["fin_delta_net_debt"]
-    log_info(f"Base capital calls sum: {df['fin_base_calls'].sum()}")
+    
+    # Calculate investment needs: Only consider negative cash flows (outflows).
+    df['investment_needs'] = df['fin_investing_cash_flow'].apply(lambda x: abs(x) if x < 0 else 0)
+    
+    # Calculate debt repayment: If net debt decreases (delta negative), treat that as repayment.
+    df['delta_net_debt'] = df['fin_net_debt'].diff().fillna(0)
+    df['debt_repayment'] = df['delta_net_debt'].apply(lambda x: abs(x) if x < 0 else 0)
+    
+    # Available funds from operations and current cash.
+    df['available_funds'] = df['fin_operating_cash_flow'] + df['fin_cash_and_cash_equivalents']
+    
+    # Calculate capital call shortfall.
+    df['capital_call_shortfall'] = df['investment_needs'] + df['debt_repayment'] - df['available_funds']
+    df['capital_calls_new'] = df['capital_call_shortfall'].apply(lambda x: x if x > 0 else 0)
+    
+    log_info("New capital call calculation complete. Descriptive stats:\n" +
+             str(df['capital_calls_new'].describe()))
     return df
 
 # --------------------------------------------------------------------------
-# 4. Adjustment Factors & Final Calculation
+# 4. Existing Distributions Calculation (unchanged)
 # --------------------------------------------------------------------------
-
-def calculate_capital_calls_enhanced(df, window=7, growth_weight=0.5):
-    # Calculate rolling capex growth over the specified window.
-    df["fin_capex_growth"] = df["fin_capital_expenditure"].pct_change(periods=window).fillna(0)
-    log_info("Rolling capex growth (first 5 rows):\n" + str(df["fin_capex_growth"].head()))
-    
-    # Macro adjustment factor.
-    if "macro_inflation_rate" in df.columns:
-        macro_adj = 1 + df["macro_inflation_rate"].mean()/100
-    else:
-        macro_adj = 1.0
-    # Volatility adjustment factor.
-    if "stock_Volatility_30" in df.columns:
-        vol_adj = 1 + df["stock_Volatility_30"].mean()/100
-    else:
-        vol_adj = 1.0
-    
-    overall_adj = (1 + growth_weight * df["fin_capex_growth"]) * macro_adj * vol_adj
-    log_info("Overall adjustment factor (first 5 rows):\n" + str(overall_adj.head()))
-    
-    df["capital_calls"] = df["fin_base_calls"] * overall_adj
-    log_info("Enhanced capital calls computed. Descriptive stats:\n" + str(df["capital_calls"].describe()))
-    return df
 
 def calculate_distributions_enhanced(df, window=7, growth_weight=0.5):
     for col in ['fin_operating_cash_flow', 'fin_retained_earnings']:
@@ -157,7 +156,8 @@ def calculate_distributions_enhanced(df, window=7, growth_weight=0.5):
         dist_factor = 1.0
     overall_adj = (1 + growth_weight * df["fin_ocf_growth"]) * dist_factor
     df["distributions"] = df["fin_base_distributions"] * overall_adj
-    log_info("Enhanced distributions computed. Descriptive stats:\n" + str(df["distributions"].describe()))
+    log_info("Enhanced distributions computed. Descriptive stats:\n" +
+             str(df["distributions"].describe()))
     return df
 
 # --------------------------------------------------------------------------
@@ -184,17 +184,16 @@ def main():
     df_master = update_master_data_csv(csv_path=MASTER_DATA_CSV, db_path=DB_PATH, table=TABLE_NAME)
     
     # QC: Print summary stats and plot key columns to verify variability.
-    key_cols = ['fin_capital_expenditure', 'fin_net_debt', 'fin_current_assets', 
-                'fin_current_liabilities', 'macro_inflation_rate', 'stock_Volatility_30']
+    key_cols = ['fin_investing_cash_flow', 'fin_operating_cash_flow', 'fin_cash_and_cash_equivalents', 
+                'fin_net_debt', 'macro_inflation_rate', 'stock_Volatility_30']
     qc_print_stats(df_master, key_cols)
     for col in key_cols:
         plot_time_series(df_master, col, output_dir="output/qc_plots")
     
-    # Base calculation.
-    df_master = calculate_base_calls(df_master)
+    # New Capital Call Calculation using the updated logic.
+    df_master = calculate_capital_calls_new(df_master)
     
-    # Enhanced calculations.
-    df_master = calculate_capital_calls_enhanced(df_master, window=7, growth_weight=0.5)
+    # Enhanced distributions calculation.
     df_master = calculate_distributions_enhanced(df_master, window=7, growth_weight=0.5)
     
     # Store updated data.
@@ -203,13 +202,6 @@ def main():
     log_info(f"Enhanced master data exported to '{OUTPUT_ANALYSIS_CSV}'.")
     
     return df_master
-
-def qc_print_stats(df, cols):
-    for col in cols:
-        if col in df.columns:
-            log_info(f"Stats for {col}:\n{df[col].describe()}")
-        else:
-            log_info(f"Column {col} not found in data.")
 
 def run():
     return main()

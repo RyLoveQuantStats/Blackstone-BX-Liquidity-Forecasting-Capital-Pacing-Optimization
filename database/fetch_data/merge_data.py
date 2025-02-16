@@ -1,132 +1,133 @@
-'''
-Description: Script to merge stock_prices, kkr_statements, and macroeconomic_data tables 
-into a master_data table for the period 2020-2024.
-'''
-
 import pandas as pd
-import numpy as np
 import os
-
 from utils.logging_utils import setup_logging, log_info, log_error
 from utils.db_utils import get_connection, DB_PATH
 
-# Set up logging.
 setup_logging()
 
-# Define constants.
 STOCK_TABLE = "stock_prices"
 FINANCIALS_TABLE = "kkr_statements"
 MACRO_TABLE = "macroeconomic_data"
-OUTPUT_CSV = "output/master_data.csv"
+OUTPUT_CSV = "output/csv/master_data.csv"
 
-def load_table(table_name, parse_dates=True):
-    """Loads an entire table from the database."""
+STOCK_COLS = ["Date", "Volatility_30"]
+FIN_COLS = [
+    "Date",
+    "cash_and_cash_equivalents",
+    "net_debt",
+    "total_assets",
+    "total_liabilities_net_minority_interest",
+    "operating_cash_flow",
+    "investing_cash_flow",
+    "financing_cash_flow",
+    "free_cash_flow",
+    "investments_in_property_plant_and_equipment",
+    "purchase_of_investment",
+    "sale_of_investment"
+]
+MACRO_COLS = ["Date", "10Y Treasury Yield", "CPI", "BAA Corporate Bond Spread"]
+
+def fix_kkr_statements(df):
+    """
+    For the kkr_statements DataFrame:
+      1. Delete columns named 'index' and 'Date' if they exist.
+      2. Rename 'period_ending_balance' to 'Date'.
+      3. Convert the new 'Date' column to datetime.
+    """
+    df = df.drop(columns=["index", "Date"], errors="ignore")
+    if "period_ending_balance" in df.columns:
+        df = df.rename(columns={"period_ending_balance": "Date"})
+    df["Date"] = pd.to_datetime(df["Date"], errors="coerce")
+    return df
+
+def load_and_fix_dates(table_name):
+    """
+    Loads a single table, strips duplicates, and fixes the date column.
+    For kkr_statements, applies fix_kkr_statements.
+    """
     try:
         conn = get_connection()
-        df = pd.read_sql(f"SELECT * FROM {table_name}", conn, parse_dates=parse_dates)
+        df = pd.read_sql(f"SELECT * FROM {table_name}", conn)
         conn.close()
-        log_info(f"Table '{table_name}' loaded successfully. Columns: {list(df.columns)}")
+        
+        # Strip whitespace and drop duplicate columns.
+        df.columns = df.columns.str.strip()
+        df = df.loc[:, ~df.columns.duplicated()]
+        
+        # Special fix for kkr_statements.
+        if table_name == FINANCIALS_TABLE:
+            df = fix_kkr_statements(df)
+        else:
+            if "index" in df.columns:
+                df.rename(columns={"index": "Date"}, inplace=True)
+            if "Date" in df.columns:
+                df["Date"] = pd.to_datetime(df["Date"], errors="coerce")
+        
+        log_info(f"Loaded '{table_name}'. Columns now: {list(df.columns)}")
         return df
     except Exception as e:
         log_error(f"Error loading table '{table_name}': {e}")
         raise
 
-def load_all_tables():
-    """Loads stock, financials, and macro data from the DB."""
-    df_stock = load_table(STOCK_TABLE)
-    df_fin = load_table(FINANCIALS_TABLE)
-    df_macro = load_table(MACRO_TABLE)
-    
-    # For the financials table, rename 'period_ending_balance' to 'Date'
-    if "period_ending_balance" in df_fin.columns:
-        df_fin.rename(columns={"period_ending_balance": "Date"}, inplace=True)
-        log_info("Renamed 'period_ending_balance' to 'Date' in financials table.")
-    
-    # For stock and financials, if 'Date' isn't found but 'date' exists, rename it.
-    if "Date" not in df_stock.columns and "date" in df_stock.columns:
-        df_stock.rename(columns={"date": "Date"}, inplace=True)
-    if "Date" not in df_fin.columns and "date" in df_fin.columns:
-        df_fin.rename(columns={"date": "Date"}, inplace=True)
-    
-    # For macro, check for 'Date', 'date', or 'index'
-    if "Date" not in df_macro.columns:
-        if "date" in df_macro.columns:
-            df_macro.rename(columns={"date": "Date"}, inplace=True)
-        elif "index" in df_macro.columns:
-            df_macro.rename(columns={"index": "Date"}, inplace=True)
-        else:
-            raise KeyError("Macro table does not have a date-like column (expected 'Date', 'date', or 'index').")
-    
-    log_info("All tables loaded. Stock columns: " + str(list(df_stock.columns)))
-    log_info("Financials columns: " + str(list(df_fin.columns)))
-    log_info("Macro columns: " + str(list(df_macro.columns)))
-    return df_stock, df_fin, df_macro
-
-def prepare_dataframe(df):
+def prepare_and_reindex(df, use_cols, global_start, global_end, freq="D"):
     """
-    Prepares a DataFrame by:
-      1. Dropping duplicate columns.
-      2. Converting the 'Date' column to datetime,
-      3. Setting it as the index, sorting by date,
-      4. Removing duplicate dates.
+    1. Keep only the columns in use_cols.
+    2. Convert 'Date' to datetime, set as index, and sort.
+    3. Reindex to a daily frequency from global_start to global_end.
+    4. Forward-fill then backfill any missing values.
     """
-    # Drop duplicate columns (if any)
-    df = df.loc[:, ~df.columns.duplicated()]
-    
-    # Convert 'Date' to datetime and set as index.
+    df = df[use_cols].copy()
     df["Date"] = pd.to_datetime(df["Date"], errors="coerce")
-    df = df.set_index("Date").sort_index()
-    df = df[~df.index.duplicated(keep="first")]
-    log_info(f"Data prepared. New shape: {df.shape}")
-    return df
-
-def merge_all_data(df_stock, df_fin, df_macro):
-    """
-    Merges the three DataFrames on the date index.
-    Uses a union of all dates and forward-fills missing data.
-    Adds a prefix to each table's columns to prevent collisions.
-    """
-    full_index = df_stock.index.union(df_fin.index).union(df_macro.index)
-    df_stock_full = df_stock.reindex(full_index).ffill().add_prefix("stock_")
-    df_fin_full = df_fin.reindex(full_index).ffill().add_prefix("fin_")
-    df_macro_full = df_macro.reindex(full_index).ffill().add_prefix("macro_")
+    df.set_index("Date", inplace=True)
+    df.sort_index(inplace=True)
     
-    df_merged = pd.concat([df_stock_full, df_fin_full, df_macro_full], axis=1)
-    log_info("Data merged successfully. Merged shape: " + str(df_merged.shape))
-    return df_merged
-
-def filter_dates(df, start_date="2020-01-01", end_date="2024-12-31"):
-    """
-    Filters the DataFrame to only include dates within the specified range.
-    """
-    df_filtered = df.loc[(df.index >= start_date) & (df.index <= end_date)]
-    log_info(f"Data filtered to dates {start_date} to {end_date}. New shape: {df_filtered.shape}")
-    return df_filtered
+    # Create a daily date range.
+    full_range = pd.date_range(global_start, global_end, freq=freq)
+    
+    # Reindex and fill missing values.
+    df = df.reindex(full_range)
+    df.ffill(inplace=True)
+    df.bfill(inplace=True)
+    
+    return df
 
 def main():
     os.makedirs("output", exist_ok=True)
-    log_info("Output directory created or already exists.")
+    log_info("Starting data merge with daily reindex approach...")
     
-    # 1. Load all tables.
-    df_stock, df_fin, df_macro = load_all_tables()
+    # Global date range for reindexing.
+    global_start = "2020-01-01"
+    global_end = "2024-12-31"
     
-    # 2. Prepare each DataFrame.
-    df_stock = prepare_dataframe(df_stock)
-    df_fin = prepare_dataframe(df_fin)
-    df_macro = prepare_dataframe(df_macro)
+    # 1. Load each table.
+    df_stock_raw = load_and_fix_dates(STOCK_TABLE)
+    df_fin_raw   = load_and_fix_dates(FINANCIALS_TABLE)
+    df_macro_raw = load_and_fix_dates(MACRO_TABLE)
     
-    # 3. Log the column names for each DataFrame.
-    log_info("Stock columns: " + str(list(df_stock.columns)))
-    log_info("Financials columns: " + str(list(df_fin.columns)))
-    log_info("Macro columns: " + str(list(df_macro.columns)))
+    # 2. Prepare each DataFrame using the global date range.
+    df_stock = prepare_and_reindex(df_stock_raw, STOCK_COLS, global_start, global_end)
+    df_fin   = prepare_and_reindex(df_fin_raw, FIN_COLS, global_start, global_end)
+    df_macro = prepare_and_reindex(df_macro_raw, MACRO_COLS, global_start, global_end)
     
-    # 4. Merge all data on the Date column.
-    df_merged = merge_all_data(df_stock, df_fin, df_macro)
+    # 3. Combine all data by joining on the daily index.
+    df_merged = df_stock.join(df_fin, how="outer").join(df_macro, how="outer")
     
-    # 5. Filter data to the period 2020-2024.
-    df_merged = filter_dates(df_merged, start_date="2020-01-01", end_date="2024-12-31")
+    # 4. Filter final date range (redundant as we reindexed to this range already).
+    df_merged = df_merged.loc[global_start:global_end]
+    log_info(f"Data after final date filter: {df_merged.shape}")
     
-    # 6. Store the final merged DataFrame as the master_data table and export to CSV.
+    # 5. Replace zeros in 'purchase_of_investment' and 'sale_of_investment' with NaN,
+    #    then backfill those NaNs with the next non-zero value, and finally fill remaining NaNs with 0.
+    for col in ["purchase_of_investment", "sale_of_investment"]:
+        if col in df_merged.columns:
+            # Replace 0 with NaN only if the value is 0 (and not already NaN)
+            df_merged[col] = df_merged[col].replace(0, pd.NA)
+            # Backfill NaNs with the next valid value
+            df_merged[col] = df_merged[col].bfill()
+            # Fill any remaining NaNs with 0
+            df_merged[col] = df_merged[col].fillna(0)
+    
+    # 6. Store in DB and CSV.
     try:
         conn = get_connection()
         df_merged.to_sql("master_data", conn, if_exists="replace", index=True)
@@ -135,9 +136,12 @@ def main():
     except Exception as e:
         log_error(f"Error storing master data: {e}")
         raise
-    
+
     df_merged.to_csv(OUTPUT_CSV)
     log_info(f"Final merged data saved as CSV in '{OUTPUT_CSV}'.")
+    
+    return df_merged
 
 if __name__ == "__main__":
-    main()
+    master_df = main()
+    print(master_df.head(10))
