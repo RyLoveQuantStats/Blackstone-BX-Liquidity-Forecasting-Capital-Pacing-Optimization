@@ -1,14 +1,3 @@
-"""
-Capital Call Forecasting Model
------------------------------------
-1. Load synthetic master data from a SQL database.
-2. Forecast future values of the 'capital_call_proxy' column using a SARIMAX model.
-3. Compute risk metrics (VaR and CVaR) based on the forecast and residuals.
-4. Plot the historical series and forecast with confidence intervals.
-5. Store forecast results, synthetic data, correlation matrix, and risk statistics in SQL tables.
-6. Export forecast to a CSV file. 
-"""
-
 import os
 import pandas as pd
 import numpy as np
@@ -40,32 +29,88 @@ PLOT_DIR = os.path.join(OUTPUT_DIR, "plots")
 os.makedirs(CSV_DIR, exist_ok=True)
 os.makedirs(PLOT_DIR, exist_ok=True)
 
+# File paths for outputs
 FORECAST_CSV = os.path.join(CSV_DIR, "capital_calls_forecast_sarimax.csv")
 CORR_CSV = os.path.join(CSV_DIR, "synthetic_correlation.csv")
 HEATMAP_PNG = os.path.join(PLOT_DIR, "correlation_heatmap.png")
 FORECAST_PLOT_PNG = os.path.join(PLOT_DIR, "forecast_plot.png")
 
+
 # ---------------------------
-# 1. Data Loading Function
+# Synthetic Data Generation
+# ---------------------------
+def create_synthetic_master_data():
+    """
+    Creates a synthetic dataset representing daily financial data from 2020 to 2024.
+    Mimics key financial metrics for capital call forecasting.
+    """
+    dates = pd.date_range(start='2020-01-01', end='2024-12-31', freq='D')
+    n = len(dates)
+    np.random.seed(42)
+    data = pd.DataFrame({
+        'fin_investing_cash_flow': np.random.normal(loc=100, scale=50, size=n),
+        'fin_financing_cash_flow': np.random.normal(loc=50, scale=25, size=n),
+        'fin_operating_cash_flow': np.random.normal(loc=200, scale=75, size=n),
+        'cash_and_cash_equivalents': np.random.normal(loc=300, scale=100, size=n),
+        'macro_10Y Treasury Yield': np.random.normal(loc=2, scale=0.5, size=n)
+    }, index=dates)
+    
+    # Compute a capital call proxy:
+    data['capital_call_proxy'] = (
+        data['fin_investing_cash_flow'] + data['fin_financing_cash_flow'] -
+        data['fin_operating_cash_flow'] - data['cash_and_cash_equivalents']
+    ).apply(lambda x: x if x > 0 else 0)
+    
+    return data
+
+def save_synthetic_data(data):
+    """
+    Saves the synthetic master data to CSV and stores it in a new SQL table.
+    """
+    MASTER_CSV = os.path.join(CSV_DIR, "synthetic_master_data.csv")
+    data.to_csv(MASTER_CSV)
+    log_info(f"Synthetic master data saved as CSV in '{MASTER_CSV}'.")
+    try:
+        store_dataframe(data, "synthetic_master_data", if_exists="replace")
+        log_info("Synthetic master data stored in SQL table 'synthetic_master_data'.")
+    except Exception as e:
+        log_error(f"Error storing synthetic master data: {e}")
+        raise
+    return data
+
+
+# ---------------------------
+# Data Loading Function (Revised)
 # ---------------------------
 def load_synthetic_data():
     """
     Loads the synthetic_master_data table from the database.
-    Expects that the table has a 'Date' column (or index) with valid datetime values.
+    If the 'Date' column exists, it will be converted to datetime and set as the index.
+    Otherwise, it assumes that the index already holds the date information.
     """
     try:
         conn = get_connection()
-        # We assume Date is stored as a column; parse and set as index.
-        df = pd.read_sql("SELECT * FROM synthetic_master_data", conn, parse_dates=["Date"], index_col="Date")
+        # Load without specifying index_col or parse_dates
+        df = pd.read_sql("SELECT * FROM synthetic_master_data", conn)
         conn.close()
+        if "Date" in df.columns:
+            df["Date"] = pd.to_datetime(df["Date"])
+            df.set_index("Date", inplace=True)
+        else:
+            # Assume the index was stored already as the date
+            try:
+                df.index = pd.to_datetime(df.index)
+            except Exception as e:
+                log_error("Failed to convert index to datetime.", e)
         log_info(f"Synthetic master data loaded. Shape: {df.shape}")
         return df
     except Exception as e:
         log_error(f"Error loading synthetic master data: {e}")
         raise
 
+
 # ---------------------------
-# 2. Forecasting Function (SARIMAX)
+# Forecasting Function (SARIMAX)
 # ---------------------------
 def forecast_capital_call_proxy():
     """
@@ -86,7 +131,7 @@ def forecast_capital_call_proxy():
             series = series.asfreq('MS')
         
         # Fit SARIMAX model - example order; adjust if necessary
-        model = SARIMAX(series, order=(1,1,1), seasonal_order=(1,1,1,12),
+        model = SARIMAX(series, order=(1, 1, 1), seasonal_order=(1, 1, 1, 12),
                         enforce_stationarity=False, enforce_invertibility=False)
         results = model.fit(disp=False)
         forecast_steps = 12
@@ -100,8 +145,9 @@ def forecast_capital_call_proxy():
         log_error(f"Error forecasting capital call proxy: {e}")
         return 0, None, None, None
 
+
 # ---------------------------
-# 3. Risk Metrics Function
+# Risk Metrics Function
 # ---------------------------
 def compute_risk_metrics(forecast_series, residual_std):
     """
@@ -116,15 +162,16 @@ def compute_risk_metrics(forecast_series, residual_std):
     df_forecast["CVaR_5"] = df_forecast["CVaR_5"].apply(lambda x: x if x > 0 else 0)
     return df_forecast
 
+
 # ---------------------------
-# 4. Plotting Function
+# Plotting Function
 # ---------------------------
 def plot_forecast(history, forecast_series, conf_int):
     """
     Plots historical capital_call_proxy and forecast with confidence intervals.
     Saves the plot to disk.
     """
-    plt.figure(figsize=(10,6))
+    plt.figure(figsize=(10, 6))
     plt.plot(history.index, history, label="Historical Capital Call Proxy", color="blue")
     plt.plot(forecast_series.index, forecast_series, label="Forecast", color="red")
     if conf_int is not None:
@@ -139,8 +186,9 @@ def plot_forecast(history, forecast_series, conf_int):
     plt.show()
     log_info(f"Forecast plot saved to '{FORECAST_PLOT_PNG}'.")
 
+
 # ---------------------------
-# 5. Store Forecast and Analysis Results in SQL
+# Store Analysis Results in SQL
 # ---------------------------
 def store_analysis_results(forecast_df, synthetic_df, corr_matrix, risk_stats):
     """
@@ -159,30 +207,36 @@ def store_analysis_results(forecast_df, synthetic_df, corr_matrix, risk_stats):
         log_error(f"Error storing analysis results: {e}")
         raise
 
+
 # ---------------------------
-# 6. Main Execution Function
+# Main Execution Function
 # ---------------------------
 def main():
     os.makedirs("output", exist_ok=True)
     
-    # Load synthetic master data
+    # Create synthetic master data and store it in the DB
+    synthetic_data = create_synthetic_master_data()
+    synthetic_data = save_synthetic_data(synthetic_data)
+    
+    # Load synthetic master data (now updated in the DB)
     synthetic_df = load_synthetic_data()
     
-    # Compute correlation matrix and save heatmap
-    corr_matrix = synthetic_df.corr()
+    # Compute correlation matrix using only numeric columns and save heatmap
+    numeric_df = synthetic_df.select_dtypes(include=[np.number])
+    corr_matrix = numeric_df.corr()
     corr_matrix.to_csv(CORR_CSV)
     log_info(f"Correlation matrix saved to '{CORR_CSV}'.")
-    plt.figure(figsize=(10,8))
+    plt.figure(figsize=(10, 8))
     sns.heatmap(corr_matrix, annot=True, cmap="coolwarm", fmt=".2f")
     plt.title("Correlation Heatmap of Synthetic Master Data")
     plt.savefig(HEATMAP_PNG)
     plt.close()
     log_info(f"Correlation heatmap saved to '{HEATMAP_PNG}'.")
     
-    # Forecast capital call proxy
+    # Forecast capital call proxy using SARIMAX
     forecast_sum, hist_series, forecast_series, conf_int = forecast_capital_call_proxy()
     
-    # Plot forecast
+    # Plot forecast if available
     if hist_series is not None and forecast_series is not None:
         plot_forecast(hist_series, forecast_series, conf_int)
     
@@ -206,7 +260,8 @@ def main():
     })
     
     # Store forecast and analysis results in SQL
-    store_analysis_results(forecast_series.to_frame(name="forecast_capital_calls"), synthetic_df, corr_matrix, risk_stats)
+    store_analysis_results(forecast_series.to_frame(name="forecast_capital_calls"),
+                             synthetic_df, corr_matrix, risk_stats)
     
     # Export forecast to CSV
     forecast_series.to_frame(name="forecast_capital_calls").to_csv(FORECAST_CSV)
@@ -216,4 +271,3 @@ def main():
 
 if __name__ == "__main__":
     forecast_results = main()
-    print(forecast_results.tail(10))
