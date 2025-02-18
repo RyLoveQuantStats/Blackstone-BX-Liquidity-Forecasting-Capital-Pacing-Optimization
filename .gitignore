@@ -19,6 +19,7 @@ pyvenv.cfg
 *.env
 constants.py
 config.py
+settings.py
 
 # Ignore IDE and OS files
 .vscode/
